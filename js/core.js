@@ -821,6 +821,12 @@ TT.cloud = {
       TT.cloud.db = firebase.firestore(); return true;
     } catch (e) { return false; }
   },
+  reg: function () {
+    if (!TT.cloud.db) return; var t = TT.getTeam(); if (!t) return;
+    try {
+      TT.cloud.db.collection("teams").doc(t.code).set({ name: t.name, members: t.members, code: t.code, at: Date.now() });
+    } catch (e) {}
+  },
   push: function (round, score, correct, timeSec) {
     if (!TT.cloud.db) return; var t = TT.getTeam(); if (!t) return;
     try {

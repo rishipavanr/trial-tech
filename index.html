@@ -148,9 +148,17 @@
 
     var t = { name: name, members: members, code: makeCode(name), at: Date.now() };
     TT.lsSet(TT_CONFIG.store.team, t);
-    if (!TT_CONFIG.isIsland) TT.cloud.reg();
+    try {
+      if (!TT_CONFIG.isIsland && TT.cloud && typeof TT.cloud.reg === "function") {
+        TT.cloud.reg();
+      }
+    } catch (err) {
+      console.warn("Cloud reg notice:", err);
+    }
     TT.toast("Team registered! Loading instructions…", "good");
-    setTimeout(function () { location.href = "instructions.html"; }, 500);
+    setTimeout(function () {
+      window.location.href = "instructions.html";
+    }, 350);
   };
 })();
 </script>
