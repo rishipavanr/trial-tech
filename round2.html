@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TECH TRIVIA — Round 2 · Corporate Clue</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="star-layer3"></div>
+<div id="tt-loader"></div>
+
+<!-- Round splash badge -->
+<div class="round-splash" id="roundSplash">
+  <div class="round-splash-inner">
+    <span class="round-splash-icon">🏢</span>
+    <div class="round-splash-title" style="color:var(--r2)">ROUND 2</div>
+    <div class="round-splash-sub">Corporate Clue — Know Your Industry</div>
+    <div class="round-splash-line" style="background:linear-gradient(90deg,transparent,var(--r2),transparent)"></div>
+  </div>
+</div>
+
+<main class="wrap" id="main"></main>
+
+<script src="js/config.js"></script>
+<script src="js/data.js"></script>
+<script src="js/core.js"></script>
+<script src="js/common.js"></script>
+<script src="js/quiz.js"></script>
+<script>
+(function () {
+  setTimeout(function(){ var s=document.getElementById('roundSplash'); if(s) s.remove(); }, 2600);
+
+  TT.boot(TT_DATA.brand.event + " · Round 2 — Corporate Clue");
+  TT.quiz.init("r2", {
+    title: "🏢 Round 2 — Corporate Clue",
+    desc: "25 questions · logos, slogans, fill-ups & MCQs · one overall timer"
+  });
+})();
+</script>
+</body>
+</html>

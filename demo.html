@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>TECH TRIVIA - Demo</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="star-layer3"></div>
+<div id="tt-loader"></div>
+
+<main class="wrap narrow">
+  <div class="hero" style="padding:26px"><h1 style="font-size:26px">DEMO <span>QUESTIONS</span></h1></div>
+  
+  <div class="card">
+    <h3>🧠 Round 1 Sample (Prelims)</h3>
+    <p class="q-text">What is the output of print(2 ** 3)?</p>
+    <div class="opts">
+      <div class="opt" onclick="check('r1',0)"><span class="key">A</span><span>6</span></div>
+      <div class="opt" onclick="check('r1',1)"><span class="key">B</span><span>8</span></div>
+      <div class="opt" onclick="check('r1',2)"><span class="key">C</span><span>9</span></div>
+      <div class="opt" onclick="check('r1',3)"><span class="key">D</span><span>64</span></div>
+    </div>
+    <div id="r1msg"></div>
+  </div>
+
+  <div class="card">
+    <h3>🏢 Round 2 Sample (Corporate Clue)</h3>
+    <p class="q-text">Identify this company: <img src="assets/logo-instagram.png" style="max-height:60px;display:inline-block;vertical-align:middle"></p>
+    <div class="opts">
+      <div class="opt" onclick="check('r2',0)"><span class="key">A</span><span>Instagram</span></div>
+      <div class="opt" onclick="check('r2',1)"><span class="key">B</span><span>Snapchat</span></div>
+    </div>
+    <div id="r2msg"></div>
+  </div>
+
+  <div class="card">
+    <h3>🖼️ Round 3 Sample (Visual Logic)</h3>
+    <div style="display:flex;gap:10px;justify-content:center;margin:10px 0">
+      <div style="font-size:40px">☁️</div><div style="font-size:40px">💾</div>
+      <div style="font-size:40px">🌩️</div><div style="font-size:40px">📁</div>
+    </div>
+    <p class="hint">Hint: Your files live here, but not on your desk.</p>
+    <input class="input" id="r3ans" placeholder="Type the tech word...">
+    <button class="btn" style="margin-top:10px" onclick="checkR3()">Check</button>
+    <div id="r3msg"></div>
+  </div>
+
+  <div class="card">
+    <h3>⚡ Round 4 Sample (Rapid Rush)</h3>
+    <p>Write a Python program that prints: <code>Hello, World!</code></p>
+    <textarea class="code" id="r4code" rows="4" placeholder="print('Hello, World!')"></textarea>
+    <button class="btn" style="margin-top:10px" onclick="checkR4()">Run &amp; Check</button>
+    <div id="r4msg"></div>
+    <div id="r4out" class="io-box hide" style="margin-top:10px"></div>
+  </div>
+
+  <a class="btn block" href="instructions.html" style="margin-top:20px">← Back to Instructions</a>
+</main>
+
+<script src="js/config.js"></script>
+<script src="js/data.js"></script>
+<script src="js/core.js"></script>
+<script src="js/common.js"></script>
+<script>
+function check(r, i) {
+  var correct = { r1: 1, r2: 0 }[r];
+  document.getElementById(r + "msg").innerHTML = 
+    '<div class="msg ' + (i === correct ? "good" : "bad") + '">' + 
+    (i === correct ? "✅ Correct!" : "❌ Try again") + "</div>";
+}
+function checkR3() {
+  var ans = document.getElementById("r3ans").value.trim().toLowerCase();
+  document.getElementById("r3msg").innerHTML = 
+    '<div class="msg ' + (ans === "cloud" ? "good" : "bad") + '">' + 
+    (ans === "cloud" ? "✅ Correct!" : "❌ Try again (hint: it rhymes with 'loud')") + "</div>";
+}
+function checkR4() {
+  var code = document.getElementById("r4code").value;
+  var out = document.getElementById("r4out");
+  var msg = document.getElementById("r4msg");
+  out.classList.remove("hide");
+  msg.innerHTML = '<div class="msg info">⏳ Waking up Python engine...</div>';
+  out.textContent = "Running Python...";
+  TT.preloadPython(function(err) {
+    if (err) {
+      out.textContent = "Failed to load Python engine.";
+      msg.innerHTML = '<div class="msg bad">❌ Python engine blocked by browser.</div>';
+      return;
+    }
+    TT.runPython(code).then(function(res) {
+      if (!res.ok) {
+        out.textContent = "ERROR: " + (res.err || "Execution error");
+        msg.innerHTML = '<div class="msg bad">❌ Python Execution Error</div>';
+      } else {
+        out.textContent = res.out || "(no output)";
+        var match = TT.normOut(res.out) === TT.normOut("Hello, World!");
+        msg.innerHTML = match ? 
+          '<div class="msg good">✅ Output matches! Expected: Hello, World!</div>' : 
+          '<div class="msg bad">❌ Output does not match. Expected: Hello, World!</div>';
+      }
+    });
+  });
+}
+</script>
+</body>
+</html>

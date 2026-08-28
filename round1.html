@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TECH TRIVIA — Round 1 · Prelims</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="star-layer3"></div>
+<div id="tt-loader"></div>
+
+<!-- Round splash badge -->
+<div class="round-splash" id="roundSplash">
+  <div class="round-splash-inner">
+    <span class="round-splash-icon">🧠</span>
+    <div class="round-splash-title" style="color:var(--r1)">ROUND 1</div>
+    <div class="round-splash-sub">Prelims — Prove Your Knowledge</div>
+    <div class="round-splash-line" style="background:linear-gradient(90deg,transparent,var(--r1),transparent)"></div>
+  </div>
+</div>
+
+<main class="wrap" id="main"></main>
+
+<script src="js/config.js"></script>
+<script src="js/data.js"></script>
+<script src="js/core.js"></script>
+<script src="js/common.js"></script>
+<script src="js/quiz.js"></script>
+<script>
+(function () {
+  // Remove splash after animation completes
+  setTimeout(function(){ var s=document.getElementById('roundSplash'); if(s) s.remove(); }, 2600);
+
+  var tbParam = TT.urlParam("tb");
+  var isTb = Boolean(tbParam);
+  var targetRound = isTb ? (tbParam === "1" ? "r1" : tbParam.replace("_tb", "")) : "r1";
+  var quizId = isTb ? (targetRound + "_tb") : "r1";
+
+  TT.boot(TT_DATA.brand.event + " · " + (isTb ? ("Tie-Breaker (" + targetRound.toUpperCase() + ")") : "Round 1 — Prelims"));
+  TT.quiz.init(quizId, {
+    tiebreak: isTb,
+    roundKey: targetRound,
+    title: isTb ? ("⚖️ Tie-Breaker (" + targetRound.toUpperCase() + ")") : "🧠 Round 1 — Prelims",
+    desc: isTb
+      ? "5 questions · 5 minutes · sudden death — highest score wins"
+      : "30 questions · Python & SQL basics · answers lock once picked"
+  });
+})();
+</script>
+</body>
+</html>

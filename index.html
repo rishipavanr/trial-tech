@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TECH TRIVIA — Register</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- Starfield layer 3 -->
+<div class="star-layer3"></div>
+
+<!-- Particle canvas -->
+<canvas id="tt-particles"></canvas>
+
+<!-- Neon loader bar -->
+<div id="tt-loader"></div>
+
+<div class="hero">
+  <h1>TECH <span>TRIVIA</span></h1>
+  <span class="hero-line"></span>
+  <p id="tagline">IT Quiz Championship</p>
+</div>
+
+<main class="wrap narrow" id="main">
+
+  <!-- Registration form -->
+  <div class="card" id="regCard">
+    <h3 style="text-align:center">🚀 Register Your Team</h3>
+    <p class="hint center" style="margin:8px 0 4px">
+      One registration per system. After registering you go straight to the instructions.
+    </p>
+
+    <form id="regForm">
+      <label for="teamName">🏷️ Team Name</label>
+      <input class="input" id="teamName" maxlength="40" placeholder="e.g. Byte Bandits" autocomplete="off">
+
+      <label for="memberCount">👥 Number of Members</label>
+      <select id="memberCount" class="input">
+        <option value="1">1 member</option>
+        <option value="2" selected>2 members</option>
+        <option value="3">3 members</option>
+        <option value="4">4 members</option>
+        <option value="5">5 members</option>
+      </select>
+
+      <div id="memberBox"></div>
+
+      <div class="msg warn" style="margin-top:18px">
+        ⚠️ By registering you accept the rules: <b>no tab switching</b>, <b>no refreshing</b> during a round.
+        Breaking either = instant disqualification.
+      </div>
+
+      <div style="margin-top:18px">
+        <button type="submit" class="btn block">Register &amp; Continue →</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Resume card (already registered on this machine) -->
+  <div class="card hide" id="resumeCard">
+    <div class="center">
+      <div class="badge-icon" style="margin:0 auto 12px">👥</div>
+      <h3 id="rTeam"></h3>
+      <p class="hint" id="rMembers"></p>
+    </div>
+    <div id="rRounds" style="margin:16px 0"></div>
+    <button class="btn block" id="rGo">Continue to Instructions →</button>
+    <p class="hint center" style="margin-top:12px">
+      Wrong team on this system? Ask the organizer to reset this machine from the Admin page.
+    </p>
+  </div>
+
+</main>
+
+<script src="js/config.js"></script>
+<script src="js/data.js"></script>
+<script src="js/core.js"></script>
+<script src="js/common.js"></script>
+<script>
+(function () {
+  TT.boot(TT_DATA.brand.event + " · " + TT_DATA.brand.org);
+  document.getElementById("tagline").textContent =
+    TT_DATA.brand.org + " · IT Quiz Championship";
+
+  var team = TT.getTeam();
+
+  /* ---------- Already registered: resume screen ---------- */
+  if (team) {
+    document.getElementById("regCard").classList.add("hide");
+    document.getElementById("resumeCard").classList.remove("hide");
+    document.getElementById("rTeam").textContent = team.name;
+    document.getElementById("rMembers").textContent =
+      "Members: " + team.members.join(", ");
+
+    var rounds = ["r1", "r2", "r3", "r4"];
+    var labels = { r1: "Prelims", r2: "Corporate Clue", r3: "Visual Logic", r4: "Rapid Rush" };
+    var html = "";
+    rounds.forEach(function (id) {
+      var st = TT.getState(id).status;
+      var icon = st === "done" ? "✅" : st === "live" ? "⏳" : st === "dq" ? "⛔" : "🔒";
+      html += '<div class="msg info" style="display:flex;justify-content:space-between;margin:6px 0">' +
+        "<span>" + icon + " " + labels[id] + "</span><b>" + st.toUpperCase() + "</b></div>";
+    });
+    document.getElementById("rRounds").innerHTML = html;
+    document.getElementById("rGo").onclick = function () {
+      location.href = "instructions.html";
+    };
+    return;
+  }
+
+  /* ---------- Dynamic member inputs with stagger ---------- */
+  function buildMembers() {
+    var n = parseInt(document.getElementById("memberCount").value, 10);
+    var box = document.getElementById("memberBox");
+    var html = "";
+    for (var i = 1; i <= n; i++) {
+      html += '<label for="m' + i + '">👤 Member ' + i + " Name</label>" +
+        '<input class="input" id="m' + i + '" maxlength="40" placeholder="Full name" autocomplete="off" style="animation:fadeUp .35s ease ' + (i * 0.07) + 's both">';
+    }
+    box.innerHTML = html;
+  }
+  document.getElementById("memberCount").onchange = buildMembers;
+  buildMembers();
+
+  /* ---------- Team code = stable shuffle seed ---------- */
+  function makeCode(name) {
+    var s = name + "|" + Date.now() + "|" + Math.random();
+    var h = 7;
+    for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+    return "T" + h.toString(36).toUpperCase();
+  }
+
+  /* ---------- Submit ---------- */
+  document.getElementById("regForm").onsubmit = function (e) {
+    e.preventDefault();
+    var name = document.getElementById("teamName").value.trim();
+    if (name.length < 3) { TT.toast("Team name must be at least 3 characters", "bad"); return; }
+
+    var n = parseInt(document.getElementById("memberCount").value, 10);
+    var members = [];
+    for (var i = 1; i <= n; i++) {
+      var v = document.getElementById("m" + i).value.trim();
+      if (!v) { TT.toast("Enter the name of member " + i, "bad"); return; }
+      members.push(v);
+    }
+
+    var t = { name: name, members: members, code: makeCode(name), at: Date.now() };
+    TT.lsSet(TT_CONFIG.store.team, t);
+    if (!TT_CONFIG.isIsland) TT.cloud.reg();
+    TT.toast("Team registered! Loading instructions…", "good");
+    setTimeout(function () { location.href = "instructions.html"; }, 500);
+  };
+})();
+</script>
+
+<!-- Particle canvas script -->
+<script>
+(function(){
+  var canvas = document.getElementById('tt-particles');
+  var ctx = canvas.getContext('2d');
+  var particles = [];
+  var W, H;
+
+  function resize(){
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  for(var i=0; i<70; i++){
+    particles.push({
+      x: Math.random()*2000, y: Math.random()*2000,
+      vx:(Math.random()-.5)*.4, vy:(Math.random()-.5)*.4,
+      r: Math.random()*2+.5, o: Math.random()*.6+.2
+    });
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // Update positions
+    particles.forEach(function(p){
+      p.x += p.vx; p.y += p.vy;
+      if(p.x<0) p.x=W; if(p.x>W) p.x=0;
+      if(p.y<0) p.y=H; if(p.y>H) p.y=0;
+    });
+    // Draw connections
+    for(var i=0;i<particles.length;i++){
+      for(var j=i+1;j<particles.length;j++){
+        var dx=particles[i].x-particles[j].x, dy=particles[i].y-particles[j].y;
+        var dist=Math.sqrt(dx*dx+dy*dy);
+        if(dist<120){
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle='rgba(77,216,255,'+(0.12*(1-dist/120))+')';
+          ctx.lineWidth=.7;
+          ctx.stroke();
+        }
+      }
+    }
+    // Draw dots
+    particles.forEach(function(p){
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle='rgba(77,216,255,'+p.o+')';
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+</script>
+
+</body>
+</html>
