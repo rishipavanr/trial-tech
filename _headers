@@ -3,6 +3,7 @@
 /*
   X-Content-Type-Options: nosniff
   Access-Control-Allow-Origin: *
+  Cache-Control: no-cache, no-store, must-revalidate
 
 /*.wasm
   Content-Type: application/wasm
@@ -14,6 +15,7 @@
 
 /*.js
   Content-Type: application/javascript
+  Cache-Control: no-cache, no-store, must-revalidate
 
 /pyodide/*
   Access-Control-Allow-Origin: *

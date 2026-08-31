@@ -39,8 +39,53 @@ TT.shuffle = function (arr, r) {
 };
 
 /* ================= STORAGE ================= */
-TT.lsGet = function (k, fb) { try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : fb; } catch (e) { return fb; } };
-TT.lsSet = function (k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+TT.setCookie = function (name, value, days) {
+  var expires = "";
+  if (days) {
+    var date = new Date();
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    expires = "; expires=" + date.toUTCString();
+  }
+  document.cookie = name + "=" + (value || "") + expires + "; path=/";
+};
+TT.getCookie = function (name) {
+  var nameEQ = name + "=";
+  var ca = document.cookie.split(';');
+  for(var i=0;i < ca.length;i++) {
+    var c = ca[i];
+    while (c.charAt(0)==' ') c = c.substring(1,c.length);
+    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+  }
+  return null;
+};
+
+TT.lsGet = function (k, fb) { 
+  try { 
+    var v = localStorage.getItem(k); 
+    if (!v) {
+      // Fallback to cookie for session redundancy
+      var cookieVal = TT.getCookie(k);
+      if (cookieVal) {
+        v = decodeURIComponent(cookieVal);
+        localStorage.setItem(k, v);
+      }
+    }
+    return v ? JSON.parse(v) : fb; 
+  } catch (e) { return fb; } 
+};
+TT.lsSet = function (k, v) { 
+  try { 
+    var str = JSON.stringify(v);
+    localStorage.setItem(k, str); 
+    // Mirror core session keys to cookies to prevent accidental loss
+    if (k === C.store.team || k.indexOf(C.store.round) === 0 || k === C.store.dq) {
+      TT.setCookie(k, encodeURIComponent(str), 2); // Keep active for 2 days
+    }
+  } catch (e) {} 
+};
+TT.lsRemove = function(k) {
+  try { localStorage.removeItem(k); TT.setCookie(k, "", -1); } catch (e) {}
+};
 
 /* ================= TEAM ================= */
 TT.getTeam = function () { return TT.lsGet(C.store.team, null); };
@@ -854,6 +899,24 @@ TT.cloud = {
         cb(Object.keys(rows).map(function (k) { return rows[k]; }).sort(function (a, b) { return b.total - a.total; }));
       }, function () { cb([]); });
     } catch (e) { cb([]); }
+  },
+  restoreSession: function (code, cb) {
+    if (!TT.cloud.db) { cb(false, "Firebase not connected"); return; }
+    try {
+      TT.cloud.db.collection("teams").doc(code).get().then(function(doc) {
+        if (!doc.exists) { cb(false, "Team code not found."); return; }
+        var t = doc.data();
+        TT.lsSet(C.store.team, { name: t.name, members: t.members || [], code: t.code, at: t.at || Date.now() });
+        
+        TT.cloud.db.collection("scores").where("code", "==", code).get().then(function(snap) {
+          snap.forEach(function(sDoc) {
+            var r = sDoc.data();
+            TT.lsSet(TT.rKey(r.round), { status: "done", score: r.score, correct: r.correct, timeSec: r.timeSec, endedAt: r.at });
+          });
+          cb(true);
+        }).catch(function() { cb(true, "Team recovered, but could not fetch scores."); });
+      }).catch(function(err) { cb(false, "Error fetching team: " + err); });
+    } catch(e) { cb(false, "Error: " + e.message); }
   }
 };
 
@@ -864,7 +927,7 @@ window.TT = TT;
   var TT = window.TT, C = window.TT_CONFIG;
   TT.setGlobalDQ = function (reason) { TT.lsSet(C.store.dq, { reason: reason || "Anti-cheat violation", at: Date.now() }); };
   TT.globalDQ = function () { return TT.lsGet(C.store.dq, null); };
-  TT.clearGlobalDQ = function () { try { localStorage.removeItem(C.store.dq); } catch (e) {} };
+  TT.clearGlobalDQ = function () { try { TT.lsRemove(C.store.dq); } catch (e) {} };
 
   TT.unlockSystem = function (key) {
     if (String(key || "").trim() === C.adminPassword) {
@@ -978,7 +1041,7 @@ window.TT = TT;
       });
     });
   };
-  var origPush = TT.cloud.push, origBoard = TT.cloud.board, origReg = TT.cloud.reg;
+  var origPush = TT.cloud.push, origBoard = TT.cloud.board, origReg = TT.cloud.reg, origRestore = TT.cloud.restoreSession;
   TT.cloud.push = function () {
     var a = arguments;
     if (TT.cloud.db) return origPush.apply(null, a);
@@ -993,6 +1056,10 @@ window.TT = TT;
     var a = arguments;
     if (TT.cloud.db) return origReg.apply(null, a);
     TT.cloud.boot(function (ok) { if (ok) origReg.apply(null, a); });
+  };
+  if (origRestore) TT.cloud.restoreSession = function (code, cb) {
+    if (TT.cloud.db) return origRestore(code, cb);
+    TT.cloud.boot(function (ok) { if (ok) origRestore(code, cb); else cb(false, "Could not load Firebase."); });
   };
   TT.cloud.init = function () { TT.cloud.boot(); };
 })();

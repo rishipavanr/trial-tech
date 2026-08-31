@@ -56,6 +56,10 @@
         <button type="submit" class="btn block">Register &amp; Continue →</button>
       </div>
     </form>
+    <div style="text-align:center; margin-top:20px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1)">
+      <p class="hint">Lost your session or changed devices?</p>
+      <button type="button" class="btn ghost small" id="restoreSessionBtn" style="margin-top:6px">Restore Cloud Session</button>
+    </div>
   </div>
 
   <!-- Resume card (already registered on this machine) -->
@@ -115,10 +119,10 @@
       var pwd = prompt("Enter Admin Password to register a new team on this device:");
       if (pwd !== null && pwd.trim() === TT_CONFIG.adminPassword) {
         // Clear current session data but PRESERVE tt_scores (Island mode scoreboard)
-        localStorage.removeItem(TT_CONFIG.store.team);
-        localStorage.removeItem(TT_CONFIG.store.dq);
+        TT.lsRemove(TT_CONFIG.store.team);
+        TT.lsRemove(TT_CONFIG.store.dq);
         var rounds = ["r1", "r2", "r3", "r4", "tiebreak"];
-        rounds.forEach(function(r) { localStorage.removeItem(TT.rKey(r)); });
+        rounds.forEach(function(r) { TT.lsRemove(TT.rKey(r)); });
         TT.toast("Session cleared. Ready for new team.", "good");
         setTimeout(function() { window.location.reload(); }, 800);
       } else if (pwd !== null) {
@@ -178,6 +182,30 @@
       window.location.href = "instructions.html";
     }, 350);
   };
+
+  /* ---------- Restore Session ---------- */
+  var restoreBtn = document.getElementById("restoreSessionBtn");
+  if (restoreBtn) {
+    if (TT_CONFIG.isIsland || !TT_CONFIG.firebase.enabled) {
+      restoreBtn.style.display = "none";
+    } else {
+      restoreBtn.onclick = function() {
+        var code = prompt("Enter your Team Code (e.g. TXXXXX):");
+        if (!code) return;
+        code = code.trim().toUpperCase();
+        restoreBtn.textContent = "Loading...";
+        TT.cloud.restoreSession(code, function(success, msg) {
+          restoreBtn.textContent = "Restore Cloud Session";
+          if (success) {
+            TT.toast("Session restored successfully!", "good");
+            setTimeout(function() { window.location.reload(); }, 1000);
+          } else {
+            TT.toast(msg || "Failed to restore session.", "bad");
+          }
+        });
+      };
+    }
+  }
 })();
 </script>
 

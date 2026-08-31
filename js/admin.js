@@ -779,14 +779,14 @@ function panelMachine() {
       "Delete team registration AND reset all rounds on this machine? (Scores already pushed to Firebase or score.js are preserved.)",
       function () {
         try {
-          localStorage.removeItem(C.store.team);
-          localStorage.removeItem(C.store.dq);
+          TT.lsRemove(C.store.team);
+          TT.lsRemove(C.store.dq);
           var toKill = [];
           for (var i = 0; i < localStorage.length; i++) {
             var k = localStorage.key(i);
             if (k && k.indexOf("tt_round_") === 0) toKill.push(k);
           }
-          toKill.forEach(function (k) { localStorage.removeItem(k); });
+          toKill.forEach(function (k) { TT.lsRemove(k); });
         } catch (e) {}
         TT.toast("Team deleted + all rounds reset ✅", "good");
         setTimeout(function () { location.reload(); }, 400);
@@ -821,7 +821,7 @@ function panelMachine() {
         var k = localStorage.key(i);
         if (k && k.indexOf("tt_") === 0) kill.push(k);
       }
-      kill.forEach(function (k) { localStorage.removeItem(k); });
+      kill.forEach(function (k) { TT.lsRemove(k); });
       location.reload();
     }, "Factory Reset");
   };
