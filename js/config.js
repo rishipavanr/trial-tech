@@ -46,7 +46,7 @@ const TT_CONFIG = {
   },
 
   /* ---------- Admin ---------- */
-  adminPassword: "trivia2026",
+  adminPassword: "techtrivia26",
 
   /* ---------- Anti-cheat ---------- */
   antiCheat: {

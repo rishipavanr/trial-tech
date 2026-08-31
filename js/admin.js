@@ -54,7 +54,7 @@ TT.admin.init = function () {
         '<button class="btn block" id="lg">Login</button><div id="lgMsg"></div>' +
       '</div>';
     document.getElementById("lg").onclick = function () {
-      if (v("pw") === C.adminPassword) { TT.lsSet(C.store.admin, true); TT.admin.init(); }
+      if (v("pw").trim() === C.adminPassword) { TT.lsSet(C.store.admin, true); TT.admin.init(); }
       else document.getElementById("lgMsg").innerHTML = '<div class="msg bad">Wrong password</div>';
     };
     document.getElementById("pw").onkeydown = function (e) { if (e.key === "Enter") document.getElementById("lg").onclick(); };

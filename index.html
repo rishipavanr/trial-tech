@@ -70,6 +70,9 @@
     <p class="hint center" style="margin-top:12px">
       Wrong team on this system? Ask the organizer to reset this machine from the Admin page.
     </p>
+    <div style="text-align:center; margin-top:12px;">
+      <button class="btn ghost small" id="adminNewTeamBtn">Admin: Register New Team</button>
+    </div>
   </div>
 
 </main>
@@ -106,6 +109,21 @@
     document.getElementById("rRounds").innerHTML = html;
     document.getElementById("rGo").onclick = function () {
       location.href = "instructions.html";
+    };
+
+    document.getElementById("adminNewTeamBtn").onclick = function () {
+      var pwd = prompt("Enter Admin Password to register a new team on this device:");
+      if (pwd !== null && pwd.trim() === TT_CONFIG.adminPassword) {
+        // Clear current session data but PRESERVE tt_scores (Island mode scoreboard)
+        localStorage.removeItem(TT_CONFIG.store.team);
+        localStorage.removeItem(TT_CONFIG.store.dq);
+        var rounds = ["r1", "r2", "r3", "r4", "tiebreak"];
+        rounds.forEach(function(r) { localStorage.removeItem(TT.rKey(r)); });
+        TT.toast("Session cleared. Ready for new team.", "good");
+        setTimeout(function() { window.location.reload(); }, 800);
+      } else if (pwd !== null) {
+        TT.toast("Incorrect Admin Password", "bad");
+      }
     };
     return;
   }

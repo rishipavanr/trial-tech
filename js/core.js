@@ -94,6 +94,8 @@ TT.disarm = function () {
 
 TT.arm = function (roundId) {
   TT.disarm(); // clear any previous listeners
+  // Only arm if we are actually on a round page
+  if (location.pathname.indexOf("round") === -1) return;
   var st = TT.getState(roundId); if (st.status !== "live") return;
   var killed = false;
   var kill = function (reason) {

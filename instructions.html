@@ -13,70 +13,88 @@
 
 <main class="wrap">
 
-  <h2 class="section" style="margin-top:8px">📋 Instructions &amp; Rules</h2>
+  <h2 class="section" style="margin-top:8px; text-align:center;">📋 Instructions &amp; Rules</h2>
 
-  <!-- Round overview — themed cards -->
-  <div class="grid cols2">
-    <div class="card tight round-card-r1">
-      <h3>🧠 Round 1 — Prelims</h3>
-      <p class="hint">30 MCQs on Python &amp; SQL basics · <b>15 min</b> · 1–2 pts each.<br>
-      Questions are shuffled per team. Once you pick an answer it <b>locks forever</b> — you may revisit, never change.</p>
+  <!-- Tab Navigation -->
+  <div style="display:flex; justify-content:center; gap:10px; margin-bottom: 20px;">
+    <button class="btn" id="btn-tab-general">General Rules</button>
+    <button class="btn ghost" id="btn-tab-rounds">Round Details</button>
+    <button class="btn ghost" id="btn-tab-dash">Dashboard &amp; Start</button>
+  </div>
+
+  <!-- TAB 1: General Rules -->
+  <div id="tab-general">
+    <!-- Scoring -->
+    <div class="card tight">
+      <h3>🧮 Scoring</h3>
+      <p class="hint">Round Score = (correct answers × points) + <b>Speed Bonus</b>.<br>
+      • <b>Speed Bonus</b>: Earn up to 50% extra points for finishing fast with accurate answers.<br>
+      • <b>Partial Credit (R4)</b>: Points are awarded based on output accuracy and closeness even if not 100% solved.<br>
+      • <b>Anti-Cheat</b>: Hardcoded <code>print()</code> outputs without algorithmic logic are detected and awarded 0 pts.<br>
+      • <b>No negative marking</b>. Tie-breaks use special extra questions triggered by the organizer.</p>
     </div>
-    <div class="card tight round-card-r2">
-      <h3>🏢 Round 2 — Corporate Clue</h3>
-      <p class="hint">25 questions: logo ID, slogan ID, fill-ups, MCQs · <b>10 min</b> overall · 2 pts each.</p>
-    </div>
-    <div class="card tight round-card-r3">
-      <h3>🖼️ Round 3 — Visual Logic</h3>
-      <p class="hint"><b>15 min</b>.<br>
-      A) Guess the Tech Word — 15 image puzzles, exact match, 3 pts each. <b>2 hints available, each hint cuts 1 pt.</b><br>
-      B) Crossword — dynamic crossword puzzle. Click Across clues to type <b>Left → Right</b>; click Down clues to type <b>Top → Down</b> · 10 pts.</p>
-    </div>
-    <div class="card tight round-card-r4">
-      <h3>⚡ Round 4 — Rapid Rush</h3>
-      <p class="hint"><b>20 min total</b> · Top 5 teams only (by key).<br>
-      <b>Step 1 (Selection)</b>: Choose any 3 (or designated number) of the 5 problem statements.<br>
-      <b>Step 2 (Coding)</b>: <b>15 minutes</b> to code and test your selected statements. Partial credit awarded for close outputs. Submit to view your separate <b>Coding Score</b>.<br>
-      <b>Step 3 (Debugging)</b>: <b>5 minutes</b> for Top 3 teams to solve the Debugging challenge (+20 pts). Final summary displays Coding + Debugging + Total.</p>
+
+    <!-- Anti-cheat -->
+    <div class="card tight" style="border-color:var(--bad)">
+      <h3 style="color:var(--bad)">⛔ Strict Anti-Cheat — read carefully</h3>
+      <p class="hint">
+        • Switching tabs or clicking outside the window = <b>instant DISQUALIFICATION</b>.<br>
+        • Refreshing or closing the page during a live round = <b>no re-entry, ever</b>.<br>
+        • Each round has a strict timer — at 00:00 your answers auto-submit.<br>
+        • Round 4 monitors tab switching too. Play fair. 🤝
+      </p>
     </div>
   </div>
 
-  <!-- Scoring -->
-  <div class="card tight">
-    <h3>🧮 Scoring</h3>
-    <p class="hint">Round Score = (correct answers × points) + <b>Speed Bonus</b>.<br>
-    • <b>Speed Bonus</b>: Earn up to 50% extra points for finishing fast with accurate answers.<br>
-    • <b>Partial Credit (R4)</b>: Points are awarded based on output accuracy and closeness even if not 100% solved.<br>
-    • <b>Anti-Cheat</b>: Hardcoded <code>print()</code> outputs without algorithmic logic are detected and awarded 0 pts.<br>
-    • <b>No negative marking</b>. Tie-breaks use special extra questions triggered by the organizer.</p>
+  <!-- TAB 2: Round Details -->
+  <div id="tab-rounds" class="hide">
+    <div class="grid cols2">
+      <div class="card tight round-card-r1">
+        <h3>🧠 Round 1 — Prelims</h3>
+        <p class="hint">30 MCQs on Python &amp; SQL basics · <b>15 min</b> · 1–2 pts each.<br>
+        Questions are shuffled per team. Once you pick an answer it <b>locks forever</b> — you may revisit, never change.</p>
+      </div>
+      <div class="card tight round-card-r2">
+        <h3>🏢 Round 2 — Corporate Clue</h3>
+        <p class="hint">25 questions: logo ID, slogan ID, fill-ups, MCQs · <b>10 min</b> overall · 2 pts each.</p>
+      </div>
+      <div class="card tight round-card-r3">
+        <h3>🖼️ Round 3 — Visual Logic</h3>
+        <p class="hint"><b>15 min</b>.<br>
+        A) Guess the Tech Word — 15 image puzzles, exact match, 3 pts each. <b>2 hints available, each hint cuts 1 pt.</b><br>
+        B) Crossword — dynamic crossword puzzle. Click Across clues to type <b>Left → Right</b>; click Down clues to type <b>Top → Down</b> · 10 pts.</p>
+      </div>
+      <div class="card tight round-card-r4">
+        <h3>⚡ Round 4 — Rapid Rush</h3>
+        <p class="hint"><b>20 min total</b> · Top 5 teams only (by key).<br>
+        <b>Step 1 (Selection)</b>: Choose any 3 (or designated number) of the 5 problem statements.<br>
+        <b>Step 2 (Coding)</b>: <b>15 minutes</b> to code and test your selected statements. Partial credit awarded for close outputs. Submit to view your separate <b>Coding Score</b>.<br>
+        <b>Step 3 (Debugging)</b>: <b>5 minutes</b> for Top 3 teams to solve the Debugging challenge (+20 pts). Final summary displays Coding + Debugging + Total.</p>
+      </div>
+    </div>
   </div>
 
-  <!-- Anti-cheat -->
-  <div class="card tight" style="border-color:var(--bad)">
-    <h3 style="color:var(--bad)">⛔ Strict Anti-Cheat — read carefully</h3>
-    <p class="hint">
-      • Switching tabs or clicking outside the window = <b>instant DISQUALIFICATION</b>.<br>
-      • Refreshing or closing the page during a live round = <b>no re-entry, ever</b>.<br>
-      • Each round has a strict timer — at 00:00 your answers auto-submit.<br>
-      • Round 4 monitors tab switching too. Play fair. 🤝
-    </p>
+  <!-- TAB 3: Dashboard (Progress & Begin) -->
+  <div id="tab-dash" class="hide">
+    <h2 class="section">🗺️ Your Progress</h2>
+    <div class="card tight" id="hub"></div>
+
+    <h2 class="section">🚀 Begin</h2>
+    <div class="radar-wrap" style="height:60px">
+      <div class="radar-ring"></div>
+      <div class="radar-ring"></div>
+      <div class="radar-ring"></div>
+    </div>
+    <div id="r1gate"></div>
+    <h2 class="section">⚖️ Tie-Breaker (Sudden Death)</h2>
+    <div class="card tight">
+      <div style="display:flex; gap:10px;">
+        <input type="text" id="tbKey" class="input" placeholder="Enter Tie-breaker Key">
+        <button id="tbGo" class="btn">Enter</button>
+      </div>
+      <div id="tbMsg"></div>
+    </div>
   </div>
-
-  <!-- Round status hub -->
-  <h2 class="section">🗺️ Your Progress</h2>
-  <div class="card tight" id="hub"></div>
-
-  <!-- Round 1 start gate -->
-  <h2 class="section">🚀 Begin</h2>
-
-  <!-- Radar pulse decoration -->
-  <div class="radar-wrap" style="height:60px">
-    <div class="radar-ring"></div>
-    <div class="radar-ring"></div>
-    <div class="radar-ring"></div>
-  </div>
-
-  <div id="r1gate"></div>
 
 </main>
 
@@ -88,6 +106,23 @@
 (function () {
   TT.boot(TT_DATA.brand.event + " · " + TT_DATA.brand.org);
   if (!TT.requireTeam()) return;
+
+  /* ---------- Tabs ---------- */
+  function switchTab(t) {
+    document.getElementById("tab-general").classList.add("hide");
+    document.getElementById("tab-rounds").classList.add("hide");
+    document.getElementById("tab-dash").classList.add("hide");
+    
+    document.getElementById("btn-tab-general").className = "btn ghost";
+    document.getElementById("btn-tab-rounds").className = "btn ghost";
+    document.getElementById("btn-tab-dash").className = "btn ghost";
+    
+    document.getElementById("tab-" + t).classList.remove("hide");
+    document.getElementById("btn-tab-" + t).className = "btn";
+  }
+  document.getElementById("btn-tab-general").onclick = function() { switchTab("general"); };
+  document.getElementById("btn-tab-rounds").onclick = function() { switchTab("rounds"); };
+  document.getElementById("btn-tab-dash").onclick = function() { switchTab("dash"); };
 
   /* ---------- Round status hub ---------- */
   var meta = [
@@ -122,18 +157,26 @@
       '<a class="btn" href="round1.html">Open Round 1 →</a></div>';
   }
 
-  /* ---------- Tie-breaker (if present on page) ---------- */
+  /* ---------- Tie-breaker ---------- */
   var tbBtn = document.getElementById("tbGo");
   if (tbBtn) {
     tbBtn.onclick = function () {
-      var k = document.getElementById("tbKey").value;
-      if (!TT.checkKey("tiebreak", k)) {
+      var k = document.getElementById("tbKey").value.trim();
+      var matchId = null;
+      if (TT.checkKey("r1_tb", k)) matchId = "r1";
+      else if (TT.checkKey("r2_tb", k)) matchId = "r2";
+      else if (TT.checkKey("r3_tb", k)) matchId = "r3";
+      else if (TT.checkKey("r4_tb", k)) matchId = "r4";
+      
+      if (!matchId || !k) {
         document.getElementById("tbMsg").innerHTML =
-          '<div class="msg bad">❌ Wrong tie-breaker key.</div>';
+          '<div class="msg bad" style="margin-top:10px">❌ Invalid tie-breaker key.</div>';
         return;
       }
-      TT.startRound("tiebreak");
-      location.href = "round1.html?tb=1";
+      
+      var tbId = matchId + "_tb";
+      TT.startRound(tbId); // Starts the specific tiebreaker round, avoiding DQ bug!
+      location.href = "round1.html?tb=" + (matchId === "r1" ? "1" : matchId);
     };
   }
 })();

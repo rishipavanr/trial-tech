@@ -158,7 +158,7 @@ TT.r3.run = function () {
         if (letter) {
           inp.classList.add("filled");
           var next = document.querySelector('.letter-box[data-pid="' + pId + '"][data-idx="' + (idx + 1) + '"]');
-          if (next) { next.focus(); next.select(); }
+          if (next) { next.focus({ preventScroll: true }); next.select(); }
         } else {
           inp.classList.remove("filled");
         }
@@ -169,7 +169,7 @@ TT.r3.run = function () {
         if (e.key === "Backspace") {
           if (!inp.value) {
             var prev = document.querySelector('.letter-box[data-pid="' + pId + '"][data-idx="' + (idx - 1) + '"]');
-            if (prev) { prev.value = ""; prev.classList.remove("filled"); prev.focus(); prev.select(); syncPuzzleBoxes(pId); }
+            if (prev) { prev.value = ""; prev.classList.remove("filled"); prev.focus({ preventScroll: true }); prev.select(); syncPuzzleBoxes(pId); }
           } else {
             inp.value = "";
             inp.classList.remove("filled");
@@ -358,7 +358,7 @@ TT.r3.run = function () {
       var inp = cellEl.querySelector("input");
       if (inp) {
         programmaticFocus = true;
-        inp.focus();
+        inp.focus({ preventScroll: true });
         inp.select();
         activeCell = { r: r, c: c };
         updateHighlight();
