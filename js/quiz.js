@@ -120,7 +120,9 @@ TT.quiz.run = function (roundId, tiebreak) {
     h += '<div class="card tight"><div class="q-nav" id="qnav"></div>' +
       '<div style="display:flex;justify-content:space-between;margin-top:14px">' +
       '<button class="btn ghost" id="prevBtn"' + (cur === 0 ? " disabled" : "") + ">Prev</button>" +
-      '<button class="btn" id="nextBtn"' + (cur === qs.length - 1 ? " disabled" : "") + ">Next</button>" +
+      (cur === qs.length - 1 
+        ? '<button class="btn warn" id="nextBtn">Submit Round</button>'
+        : '<button class="btn" id="nextBtn">Next</button>') +
       "</div></div>";
 
     document.getElementById("qMount").innerHTML = h;
@@ -168,8 +170,12 @@ TT.quiz.run = function (roundId, tiebreak) {
           if (v) {
             answers[q.id] = v;
             TT.setState(roundId, { answers: answers });
-            TT.toast("Answer locked", "warn");
-            renderQ();
+            setTimeout(function() {
+              if (document.getElementById("fillIn") === inp) {
+                inp.disabled = true;
+                TT.toast("Answer locked", "warn");
+              }
+            }, 150);
           }
         };
         inp.onkeydown = function (e) {
@@ -199,7 +205,13 @@ TT.quiz.run = function (roundId, tiebreak) {
       commitFill(); if (cur > 0) { cur--; renderQ(); }
     };
     document.getElementById("nextBtn").onclick = function () {
-      commitFill(); if (cur < qs.length - 1) { cur++; renderQ(); }
+      commitFill(); 
+      if (cur < qs.length - 1) { 
+        cur++; 
+        renderQ(); 
+      } else {
+        document.getElementById("submitBtn").click();
+      }
     };
   }
 

@@ -494,8 +494,8 @@ textarea.code::placeholder { color:rgba(143,179,204,.4); }
 
 /* ─── Crossword ──────────────────────────────────────────────── */
 .cw-wrap { overflow:auto; padding:12px 0; }
-.cw { display:grid; gap:3px; width:max-content; }
-.cw-cell { width:38px; height:38px; position:relative; }
+.cw { display:grid; gap:3px; width:max-content; --cw-size: 38px; }
+.cw-cell { width:var(--cw-size); height:var(--cw-size); position:relative; }
 .cw-cell input {
   width:100%; height:100%; text-align:center; text-transform:uppercase;
   font-weight:700; font-size:16px; padding:0; border-radius:7px;
@@ -786,6 +786,21 @@ tbody tr:hover { background:rgba(77,216,255,.06); }
   .wrap { padding:18px; }
   header { justify-content:center; text-align:center; }
   .timer { font-size:22px; }
-  .cw-cell { width:32px; height:32px; }
+  .cw { --cw-size: 30px; }
+  .cw-cell input { font-size: 14px; }
+  .letter-box { width: 22px; height: 22px; font-size: 11px; line-height: 22px; }
   .round-splash-title { font-size:26px; }
 }
+@media(max-width: 420px) {
+  .cw { --cw-size: 24px; }
+  .cw-cell input { font-size: 12px; }
+  .letter-box { width: 18px; height: 18px; font-size: 10px; line-height: 18px; }
+}
+/* --- Larger Font Sizes for Home & Instructions --- */
+body.page-home, body.page-instructions { font-size: 17px; }
+body.page-home .hint, body.page-instructions .hint { font-size: 15.5px; line-height: 1.6; }
+body.page-home h3, body.page-instructions h3 { font-size: 22px; margin-bottom: 14px; }
+body.page-home .btn, body.page-instructions .btn { font-size: 16px; padding: 14px 34px; }
+body.page-home label, body.page-instructions label { font-size: 13.5px; letter-spacing: 1.6px; }
+body.page-home .input, body.page-home select, body.page-home textarea, body.page-instructions .input, body.page-instructions select, body.page-instructions textarea { font-size: 16.5px; padding: 15px 20px; }
+body.page-home .msg, body.page-instructions .msg { font-size: 15px; padding: 15px 18px; }

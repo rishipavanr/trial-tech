@@ -115,7 +115,7 @@ TT.r3.run = function () {
           (hUsed >= 1 ? TT.esc(p.hint1) : "") + (hUsed >= 2 ? "<br>" + TT.esc(p.hint2) : "") +
         '</div>' +
         '<p style="margin:10px 0 4px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Type answer — one letter per box:</p>' +
-        boxHtml +
+        '<div style="width:100%;overflow-x:auto;padding-bottom:10px;">' + boxHtml + '</div>' +
       '</div>';
     });
     document.getElementById("mountA").innerHTML = html;
@@ -148,7 +148,7 @@ TT.r3.run = function () {
       var idx = parseInt(inp.getAttribute("data-idx"), 10);
 
       inp.onclick = function () {
-        inp.select();
+        // removed select to prevent auto-scroll
       };
 
       inp.oninput = function () {
@@ -158,7 +158,7 @@ TT.r3.run = function () {
         if (letter) {
           inp.classList.add("filled");
           var next = document.querySelector('.letter-box[data-pid="' + pId + '"][data-idx="' + (idx + 1) + '"]');
-          if (next) { next.focus({ preventScroll: true }); next.select(); }
+          if (next) { next.focus({ preventScroll: true }); }
         } else {
           inp.classList.remove("filled");
         }
@@ -169,7 +169,7 @@ TT.r3.run = function () {
         if (e.key === "Backspace") {
           if (!inp.value) {
             var prev = document.querySelector('.letter-box[data-pid="' + pId + '"][data-idx="' + (idx - 1) + '"]');
-            if (prev) { prev.value = ""; prev.classList.remove("filled"); prev.focus({ preventScroll: true }); prev.select(); syncPuzzleBoxes(pId); }
+            if (prev) { prev.value = ""; prev.classList.remove("filled"); prev.focus({ preventScroll: true }); syncPuzzleBoxes(pId); }
           } else {
             inp.value = "";
             inp.classList.remove("filled");
@@ -183,11 +183,11 @@ TT.r3.run = function () {
           e.preventDefault();
         } else if (e.key === "ArrowLeft") {
           var prevB = document.querySelector('.letter-box[data-pid="' + pId + '"][data-idx="' + (idx - 1) + '"]');
-          if (prevB) { prevB.focus(); prevB.select(); }
+          if (prevB) { prevB.focus({ preventScroll: true }); }
           e.preventDefault();
         } else if (e.key === "ArrowRight") {
           var nextB = document.querySelector('.letter-box[data-pid="' + pId + '"][data-idx="' + (idx + 1) + '"]');
-          if (nextB) { nextB.focus(); nextB.select(); }
+          if (nextB) { nextB.focus({ preventScroll: true }); }
           e.preventDefault();
         }
       };
@@ -206,7 +206,7 @@ TT.r3.run = function () {
           }
         }
         var targetIdx = Math.min(idx + letters.length, allBoxes.length - 1);
-        if (allBoxes[targetIdx]) { allBoxes[targetIdx].focus(); allBoxes[targetIdx].select(); }
+        if (allBoxes[targetIdx]) { allBoxes[targetIdx].focus({ preventScroll: true }); }
         syncPuzzleBoxes(pId);
       };
     });
@@ -241,7 +241,7 @@ TT.r3.run = function () {
     var currentDir = currentClue ? currentClue.dir : "across";
     var activeCell = currentClue ? { r: currentClue.r, c: currentClue.c } : null;
 
-    var gridHtml = '<div class="cw-wrap"><div class="cw" id="cwGrid" style="grid-template-columns:repeat(' + cw.cols + ', 38px);grid-template-rows:repeat(' + cw.rows + ', 38px)">';
+    var gridHtml = '<div class="cw-wrap"><div class="cw" id="cwGrid" style="grid-template-columns:repeat(' + cw.cols + ', var(--cw-size));grid-template-rows:repeat(' + cw.rows + ', var(--cw-size))">';
     var cellMap = {};
     cw.cells.forEach(function (c) { cellMap[c.r + "," + c.c] = c; });
 
@@ -334,7 +334,7 @@ TT.r3.run = function () {
         var item = document.getElementById("clueItem_" + currentClue.dir + "_" + currentClue.num);
         if (item) {
           item.classList.add("active-clue");
-          item.scrollIntoView({ block: "nearest", behavior: "smooth" });
+          // item.scrollIntoView({ block: "nearest", behavior: "smooth" }); // This causes the whole page to scroll down on mobile!
         }
 
         for (var i = 0; i < currentClue.len; i++) {
@@ -358,11 +358,17 @@ TT.r3.run = function () {
       var inp = cellEl.querySelector("input");
       if (inp) {
         programmaticFocus = true;
+        var sx = window.scrollX || document.documentElement.scrollLeft;
+        var sy = window.scrollY || document.documentElement.scrollTop;
         inp.focus({ preventScroll: true });
-        inp.select();
+        window.scrollTo(sx, sy);
+        
         activeCell = { r: r, c: c };
         updateHighlight();
-        setTimeout(function () { programmaticFocus = false; }, 0);
+        setTimeout(function () { 
+          window.scrollTo(sx, sy); // Double check for async scroll
+          programmaticFocus = false; 
+        }, 0);
       }
     }
 

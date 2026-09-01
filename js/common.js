@@ -120,8 +120,10 @@ TT.confirmBox = function (msg, onYes, yesLabel) {
       '<button class="btn ghost" id="cfNo">Cancel</button>' +
     "</div>";
   document.body.appendChild(back);
-  document.getElementById("cfYes").onclick = function () { back.remove(); if (onYes) onYes(); };
+  var btnYes = document.getElementById("cfYes");
+  btnYes.onclick = function () { back.remove(); if (onYes) onYes(); };
   document.getElementById("cfNo").onclick = function () { back.remove(); };
+  btnYes.focus();
 };
 
 /* ================= IMAGE HELPERS ================= */
