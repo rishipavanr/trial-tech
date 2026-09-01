@@ -151,6 +151,15 @@ TT.r3.run = function () {
         // removed select to prevent auto-scroll
       };
 
+      function safeFocus(el) {
+        if (!el) return;
+        var sx = window.scrollX || document.documentElement.scrollLeft;
+        var sy = window.scrollY || document.documentElement.scrollTop;
+        el.focus({ preventScroll: true });
+        window.scrollTo(sx, sy);
+        setTimeout(function() { window.scrollTo(sx, sy); }, 0);
+      }
+
       inp.oninput = function () {
         var raw = inp.value || "";
         var letter = raw.replace(/[^a-zA-Z0-9]/g, "").toUpperCase().slice(-1);
@@ -158,7 +167,7 @@ TT.r3.run = function () {
         if (letter) {
           inp.classList.add("filled");
           var next = document.querySelector('.letter-box[data-pid="' + pId + '"][data-idx="' + (idx + 1) + '"]');
-          if (next) { next.focus({ preventScroll: true }); }
+          if (next) safeFocus(next);
         } else {
           inp.classList.remove("filled");
         }
@@ -169,7 +178,7 @@ TT.r3.run = function () {
         if (e.key === "Backspace") {
           if (!inp.value) {
             var prev = document.querySelector('.letter-box[data-pid="' + pId + '"][data-idx="' + (idx - 1) + '"]');
-            if (prev) { prev.value = ""; prev.classList.remove("filled"); prev.focus({ preventScroll: true }); syncPuzzleBoxes(pId); }
+            if (prev) { prev.value = ""; prev.classList.remove("filled"); safeFocus(prev); syncPuzzleBoxes(pId); }
           } else {
             inp.value = "";
             inp.classList.remove("filled");
@@ -183,11 +192,11 @@ TT.r3.run = function () {
           e.preventDefault();
         } else if (e.key === "ArrowLeft") {
           var prevB = document.querySelector('.letter-box[data-pid="' + pId + '"][data-idx="' + (idx - 1) + '"]');
-          if (prevB) { prevB.focus({ preventScroll: true }); }
+          if (prevB) safeFocus(prevB);
           e.preventDefault();
         } else if (e.key === "ArrowRight") {
           var nextB = document.querySelector('.letter-box[data-pid="' + pId + '"][data-idx="' + (idx + 1) + '"]');
-          if (nextB) { nextB.focus({ preventScroll: true }); }
+          if (nextB) safeFocus(nextB);
           e.preventDefault();
         }
       };
@@ -206,7 +215,7 @@ TT.r3.run = function () {
           }
         }
         var targetIdx = Math.min(idx + letters.length, allBoxes.length - 1);
-        if (allBoxes[targetIdx]) { allBoxes[targetIdx].focus({ preventScroll: true }); }
+        if (allBoxes[targetIdx]) safeFocus(allBoxes[targetIdx]);
         syncPuzzleBoxes(pId);
       };
     });
