@@ -804,3 +804,175 @@ body.page-home .btn, body.page-instructions .btn { font-size: 16px; padding: 14p
 body.page-home label, body.page-instructions label { font-size: 13.5px; letter-spacing: 1.6px; }
 body.page-home .input, body.page-home select, body.page-home textarea, body.page-instructions .input, body.page-instructions select, body.page-instructions textarea { font-size: 16.5px; padding: 15px 20px; }
 body.page-home .msg, body.page-instructions .msg { font-size: 15px; padding: 15px 18px; }
+
+
+/* ─── FIX: Crossword viewport constraints ───────────────────── */
+#mountB {
+  max-height: calc(100vh - 220px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.cw-wrap {
+  max-height: calc(100vh - 350px);
+  overflow: auto;
+  padding: 12px 0;
+  border: 1px solid rgba(77,216,255,.15);
+  border-radius: 12px;
+  background: rgba(3,11,24,.4);
+}
+
+.cw {
+  display: grid;
+  gap: 3px;
+  width: 100%;
+  max-width: 100%;
+  --cw-size: 32px;
+  margin: 0 auto;
+}
+
+#clueColumns {
+  overflow-y: auto;
+  max-height: 200px;
+  flex-shrink: 1;
+}
+
+#clueColumns .grid.cols2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+/* Responsive adjustments */
+@media(max-width: 720px) {
+  #mountB {
+    max-height: calc(100vh - 200px);
+  }
+  
+  .cw-wrap {
+    max-height: calc(100vh - 380px);
+  }
+  
+  .cw {
+    --cw-size: 28px;
+  }
+  
+  #clueColumns {
+    max-height: 150px;
+  }
+}
+
+@media(max-width: 420px) {
+  .cw {
+    --cw-size: 24px;
+  }
+  
+  .cw-wrap {
+    max-height: calc(100vh - 400px);
+  }
+}
+
+/* ─── FIX: Round 3 Layout & Crossword Constraints ─────────────── */
+#main {
+  max-height: calc(100vh - 140px); /* Adjust 140px based on your header height */
+  overflow-y: auto;
+  padding-bottom: 20px;
+}
+
+#mountB {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 100%;
+}
+
+#mountB > .card {
+  flex-shrink: 0; /* Prevent top card from shrinking */
+  margin-bottom: 10px;
+}
+
+.cw-wrap {
+  flex: 1;
+  overflow: auto; /* Makes only the grid scrollable */
+  max-height: 50vh; /* Constrain grid height to 50% of viewport */
+  border: 1px solid rgba(77,216,255,.15);
+  border-radius: 12px;
+  padding: 10px;
+  margin: 10px 0;
+  background: rgba(3,11,24,.4);
+}
+
+.cw {
+  width: 100%;
+  max-width: 100%;
+  display: grid;
+  gap: 3px;
+  --cw-size: 32px; /* Slightly smaller for better fit */
+  margin: 0 auto;
+  /* Removed width: max-content to prevent horizontal overflow */
+}
+
+#clueColumns {
+  flex-shrink: 0;
+  max-height: 30vh; /* Constrain clues height */
+  overflow-y: auto;
+  margin-top: 10px;
+}
+
+#clueColumns .grid.cols2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+@media(max-width: 720px) {
+  #clueColumns .grid.cols2 {
+    grid-template-columns: 1fr; /* Stack clues on mobile */
+  }
+  .cw {
+    --cw-size: 28px;
+  }
+  #main {
+    max-height: calc(100vh - 120px);
+  }
+}
+
+/* ── FIX: Round 3 Layout & Crossword Constraints ─────────────── */
+#main {
+  max-height: calc(100vh - 140px);
+  overflow-y: auto;
+  padding-bottom: 20px;
+}
+#mountB {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 100%;
+}
+
+#mountB {
+  display: grid;                /* Not flex! */
+  place-items: center;          /* Centers both axes */
+  height: calc(100vh - 180px);
+  overflow: hidden;
+}
+
+.cw-wrap {
+  grid-area: 1 / 1;             /* Place in the same cell as the grid */
+  width: 90%;
+  max-width: 800px;
+  overflow: auto;
+  padding: 10px;
+  /* etc */
+}
+
+#clueColumns {
+  grid-area: 2 / 1;             /* Place below the grid */
+  width: 90%;
+  max-width: 800px;
+  max-height: 130px;
+  overflow-y: auto;
+  margin-top: 10px;
+}

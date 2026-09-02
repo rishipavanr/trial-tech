@@ -1,4 +1,4 @@
-/* TECH TRIVIA — js/data.js — exported 31/8/2026, 11:02:08 am */
+/* TECH TRIVIA — js/data.js — exported 9/1/2026, 1:18:43 PM */
 window.TT_DATA = {
   "version": 1,
   "brand": {
@@ -486,25 +486,27 @@ window.TT_DATA = {
       "questions": [
         {
           "id": "tb_r2_1",
-          "t": "Dummy Question 1 for Corporate Clue Tiebreaker?",
+          "t": "Which data structure follows the LIFO principle ?",
+          "img": null,
           "o": [
-            "Option A",
-            "Option B",
-            "Option C",
-            "Option D"
+            "QUEUE",
+            "STACK",
+            "ARRAY",
+            "LINKED LIST"
           ],
-          "a": "MA=="
+          "a": "MQ=="
         },
         {
           "id": "tb_r2_2",
-          "t": "Dummy Question 2 for Corporate Clue Tiebreaker?",
+          "t": "Which of them is not a valid SQL aggregate function ?",
+          "img": null,
           "o": [
-            "Option A",
-            "Option B",
-            "Option C",
-            "Option D"
+            "SUM()",
+            "AVG()",
+            "COUNT()",
+            "TOTAL()"
           ],
-          "a": "MA=="
+          "a": "Mw=="
         },
         {
           "id": "tb_r2_3",
@@ -546,8 +548,9 @@ window.TT_DATA = {
       "questions": [
         {
           "id": "tb_r3_1",
-          "t": "What tech word has 4 letters and starts with 'R' and ends with 'M' (memory type)?",
-          "a": "UkFN"
+          "t": "What AI bot word has 4 letters and starts with 'Q' and ends with 'N' (AI)?",
+          "img": null,
+          "a": "UVdFTg=="
         },
         {
           "id": "tb_r3_2",
@@ -557,17 +560,32 @@ window.TT_DATA = {
         {
           "id": "tb_r3_3",
           "t": "What is the smallest unit of digital data (0 or 1)?",
-          "a": "Yml0"
+          "img": null,
+          "o": [
+            "bit",
+            "binary",
+            "byte",
+            "none"
+          ],
+          "a": "MA=="
         },
         {
           "id": "tb_r3_4",
-          "t": "Full form of 'AI' in modern tech?",
-          "a": "QXJ0aWZpY2lhbCBJbnRlbGxpZ2VuY2U="
+          "t": "Full form of 'AGI' in modern tech?",
+          "img": null,
+          "a": "QXJ0aWZpY2lhbCBHZW5lcmFsIEludGVsbGlnZW5jZQ=="
         },
         {
           "id": "tb_r3_5",
           "t": "What word describes malicious software like viruses and trojans?",
-          "a": "TWFsd2FyZQ=="
+          "img": null,
+          "o": [
+            "Malware",
+            "Antivirus",
+            "Virus",
+            "MCsafe"
+          ],
+          "a": "MA=="
         }
       ]
     },

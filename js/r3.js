@@ -1,9 +1,8 @@
 /* ============================================================
-   TECH TRIVIA — js/r3.js   Round 3: Visual Logic
-   Part A: Guess the Tech Word (with letter placeholder boxes & short-form tolerance)
-   Part B: Dynamic Crossword (grid + clues visible by default, hint confirmation popup)
-   ============================================================ */
-
+TECH TRIVIA — js/r3.js   Round 3: Visual Logic
+Part A: Guess the Tech Word
+Part B: Dynamic Crossword
+============================================================ */
 (function () {
 "use strict";
 var D = window.TT_DATA, TT = window.TT;
@@ -15,7 +14,7 @@ TT.r3.init = function () {
   var verdict = TT.enterRound("r3");
   if (verdict === "locked") {
     TT.keyGate("r3", "main", {
-      title: "🖼️ Round 3 — Visual Logic",
+      title: "️ Round 3 — Visual Logic",
       desc: "Part A: Guess the Tech Word · Part B: Dynamic Crossword"
     }, function () {
       TT.setState("r3", { entered: true });
@@ -34,16 +33,13 @@ TT.r3.run = function () {
   var totalSec = (D.settings.durations.r3 || 15) * 60;
   var used = TT.elapsed(st);
   var left = Math.max(0, totalSec - used);
-
   var guesses = st.guesses || {};
   var hints   = st.hints   || {};
   var cwAns   = st.cw      || {};
 
-  // Build or reuse dynamic crossword
   var cwSeed = st.cwSeed || ("cw_" + Date.now());
   if (!st.cwSeed) TT.setState("r3", { cwSeed: cwSeed });
   var cw = TT.buildCrossword(cwSeed);
-
   var finished = false;
 
   main.innerHTML =
@@ -61,9 +57,6 @@ TT.r3.run = function () {
 
   TT.timer.start("timerEl", left, function () { doFinish(true); });
 
-  /* ─────────────────────────────────────────────────────────────
-     PART A: GUESS THE TECH WORD (with Letter Boxes)
-     ───────────────────────────────────────────────────────────── */
   function renderA() {
     document.getElementById("tabA").className = "btn small";
     document.getElementById("tabB").className = "btn ghost small";
@@ -75,36 +68,29 @@ TT.r3.run = function () {
       var hUsed = hints[p.id] || 0;
       var canonWord = TT.dec(p.a) || "";
       var words = canonWord.trim().split(/\s+/);
-      // Restore stored value (stored flat without spaces)
       var storedFlat = (guesses[p.id] || "").toUpperCase();
-      // Build boxes with correct per-word letter mapping
-      var boxHtml = '<div class="letter-box-group" data-pid="' + p.id + '" style="flex-wrap:wrap;row-gap:10px">';
+      
+      var boxHtml = '<div class="letter-box-group" data-pid="' + p.id + '">';
       var flatIdx = 0;
       words.forEach(function (w, wIdx) {
         boxHtml += '<div class="letter-word">';
         for (var j = 0; j < w.length; j++) {
           var ch = storedFlat.charAt(flatIdx) || "";
           boxHtml += '<input class="letter-box' + (ch ? " filled" : "") + '"' +
-            ' type="text" maxlength="1"' +
-            ' data-pid="' + p.id + '"' +
-            ' data-idx="' + flatIdx + '"' +
-            ' value="' + TT.esc(ch) + '"' +
-            ' autocomplete="off" spellcheck="false"' +
-            ' title="Letter ' + (j + 1) + ' of word ' + (wIdx + 1) + '">';
+            ' type="text" maxlength="1" placeholder="·"' +
+            ' data-pid="' + p.id + '" data-idx="' + flatIdx + '"' +
+            ' value="' + TT.esc(ch) + '" autocomplete="off" spellcheck="false">';
           flatIdx++;
         }
         boxHtml += '</div>';
-        if (wIdx < words.length - 1) {
-          boxHtml += '<span class="letter-word-gap">▪</span>';
-        }
+        if (wIdx < words.length - 1) boxHtml += '<span class="letter-word-gap">▪</span>';
       });
       boxHtml += '</div>';
-
       var wordDesc = words.map(function (w) { return w.length; }).join("+");
-
+      
       html += '<div class="card">' +
         '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">' +
-          '<h3>Puzzle ' + (i + 1) + '<span class="hint" style="font-size:11px;font-weight:400;margin-left:8px;letter-spacing:0.5px">(' + wordDesc + ' letters)</span></h3>' +
+          '<h3>Puzzle ' + (i + 1) + ' <span class="hint">(' + wordDesc + ' letters)</span></h3>' +
           '<div style="display:flex;gap:6px">' +
             '<button class="btn ghost small hintBtn" data-id="' + p.id + '" data-n="1"' + (hUsed >= 1 ? " disabled" : "") + '>Hint 1 (-1 pt)</button>' +
             '<button class="btn ghost small hintBtn" data-id="' + p.id + '" data-n="2"' + (hUsed >= 2 ? " disabled" : "") + '>Hint 2 (-1 pt)</button>' +
@@ -114,13 +100,12 @@ TT.r3.run = function () {
         '<div id="hintBox_' + p.id + '" class="msg warn ' + (hUsed === 0 ? "hide" : "") + '" style="margin:8px 0">' +
           (hUsed >= 1 ? TT.esc(p.hint1) : "") + (hUsed >= 2 ? "<br>" + TT.esc(p.hint2) : "") +
         '</div>' +
-        '<p style="margin:10px 0 4px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Type answer — one letter per box:</p>' +
+        '<p style="margin:10px 0 4px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Type answer:</p>' +
         '<div style="width:100%;overflow-x:auto;padding-bottom:10px;">' + boxHtml + '</div>' +
       '</div>';
     });
     document.getElementById("mountA").innerHTML = html;
 
-    // Hint buttons binding
     document.querySelectorAll(".hintBtn").forEach(function (b) {
       b.onclick = function () {
         var id = b.getAttribute("data-id");
@@ -131,33 +116,21 @@ TT.r3.run = function () {
       };
     });
 
-    // Helper to gather all letters for a puzzle into a flat string
     function syncPuzzleBoxes(pId) {
       var boxList = document.querySelectorAll('.letter-box[data-pid="' + pId + '"]');
       var str = "";
-      boxList.forEach(function (b) {
-        str += (b.value || "").toUpperCase();
-      });
+      boxList.forEach(function (b) { str += (b.value || "").toUpperCase(); });
       guesses[pId] = str;
       TT.setState("r3", { guesses: guesses });
     }
 
-    // Letter box inputs binding
     document.querySelectorAll(".letter-box").forEach(function (inp) {
       var pId = inp.getAttribute("data-pid");
       var idx = parseInt(inp.getAttribute("data-idx"), 10);
-
-      inp.onclick = function () {
-        // removed select to prevent auto-scroll
-      };
-
+      
       function safeFocus(el) {
         if (!el) return;
-        var sx = window.scrollX || document.documentElement.scrollLeft;
-        var sy = window.scrollY || document.documentElement.scrollTop;
         el.focus({ preventScroll: true });
-        window.scrollTo(sx, sy);
-        setTimeout(function() { window.scrollTo(sx, sy); }, 0);
       }
 
       inp.oninput = function () {
@@ -168,70 +141,33 @@ TT.r3.run = function () {
           inp.classList.add("filled");
           var next = document.querySelector('.letter-box[data-pid="' + pId + '"][data-idx="' + (idx + 1) + '"]');
           if (next) safeFocus(next);
-        } else {
-          inp.classList.remove("filled");
-        }
+        } else { inp.classList.remove("filled"); }
         syncPuzzleBoxes(pId);
       };
-
       inp.onkeydown = function (e) {
         if (e.key === "Backspace") {
           if (!inp.value) {
             var prev = document.querySelector('.letter-box[data-pid="' + pId + '"][data-idx="' + (idx - 1) + '"]');
             if (prev) { prev.value = ""; prev.classList.remove("filled"); safeFocus(prev); syncPuzzleBoxes(pId); }
-          } else {
-            inp.value = "";
-            inp.classList.remove("filled");
-            syncPuzzleBoxes(pId);
-          }
-          e.preventDefault();
-        } else if (e.key === "Delete") {
-          inp.value = "";
-          inp.classList.remove("filled");
-          syncPuzzleBoxes(pId);
+          } else { inp.value = ""; inp.classList.remove("filled"); syncPuzzleBoxes(pId); }
           e.preventDefault();
         } else if (e.key === "ArrowLeft") {
           var prevB = document.querySelector('.letter-box[data-pid="' + pId + '"][data-idx="' + (idx - 1) + '"]');
-          if (prevB) safeFocus(prevB);
-          e.preventDefault();
+          if (prevB) safeFocus(prevB); e.preventDefault();
         } else if (e.key === "ArrowRight") {
           var nextB = document.querySelector('.letter-box[data-pid="' + pId + '"][data-idx="' + (idx + 1) + '"]');
-          if (nextB) safeFocus(nextB);
-          e.preventDefault();
+          if (nextB) safeFocus(nextB); e.preventDefault();
         }
-      };
-
-      inp.onpaste = function (e) {
-        e.preventDefault();
-        var pasteData = (e.clipboardData || window.clipboardData).getData("text") || "";
-        var letters = pasteData.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
-        if (!letters) return;
-        var allBoxes = document.querySelectorAll('.letter-box[data-pid="' + pId + '"]');
-        for (var k = 0; k < allBoxes.length; k++) {
-          var fillIdx = k - idx;
-          if (fillIdx >= 0 && fillIdx < letters.length) {
-            allBoxes[k].value = letters.charAt(fillIdx);
-            allBoxes[k].classList.add("filled");
-          }
-        }
-        var targetIdx = Math.min(idx + letters.length, allBoxes.length - 1);
-        if (allBoxes[targetIdx]) safeFocus(allBoxes[targetIdx]);
-        syncPuzzleBoxes(pId);
       };
     });
   }
 
-
-  /* ─────────────────────────────────────────────────────────────
-     PART B: DYNAMIC CROSSWORD (Visible by default + Hint Popup)
-     ───────────────────────────────────────────────────────────── */
   function renderB() {
     document.getElementById("tabA").className = "btn ghost small";
     document.getElementById("tabB").className = "btn small";
     document.getElementById("mountA").classList.add("hide");
     document.getElementById("mountB").classList.remove("hide");
 
-    // Index clues by cell coordinates
     var cellClues = {};
     cw.clues.forEach(function (cl) {
       for (var i = 0; i < cl.len; i++) {
@@ -245,22 +181,21 @@ TT.r3.run = function () {
 
     var acrossClues = cw.clues.filter(function (c) { return c.dir === "across"; });
     var downClues   = cw.clues.filter(function (c) { return c.dir === "down"; });
-
     var currentClue = acrossClues[0] || cw.clues[0] || null;
     var currentDir = currentClue ? currentClue.dir : "across";
     var activeCell = currentClue ? { r: currentClue.r, c: currentClue.c } : null;
 
     var gridHtml = '<div class="cw-wrap"><div class="cw" id="cwGrid" style="grid-template-columns:repeat(' + cw.cols + ', var(--cw-size));grid-template-rows:repeat(' + cw.rows + ', var(--cw-size))">';
+    
     var cellMap = {};
     cw.cells.forEach(function (c) { cellMap[c.r + "," + c.c] = c; });
-
     for (var r = 0; r < cw.rows; r++) {
       for (var c = 0; c < cw.cols; c++) {
         var cell = cellMap[r + "," + c];
         if (cell) {
           gridHtml += '<div class="cw-cell" id="cwc_' + r + '_' + c + '" style="grid-row:' + (r + 1) + ';grid-column:' + (c + 1) + '">';
           if (cell.n) gridHtml += '<span class="num">' + cell.n + '</span>';
-          gridHtml += '<input maxlength="1" data-r="' + r + '" data-c="' + c + '" value="' + TT.esc(cwAns[r + "," + c] || "") + '" autocomplete="off">';
+          gridHtml += '<input maxlength="1" placeholder="·" data-r="' + r + '" data-c="' + c + '" value="' + TT.esc(cwAns[r + "," + c] || "") + '" autocomplete="off">';
           gridHtml += '</div>';
         } else {
           gridHtml += '<div class="cw-cell blank" style="grid-row:' + (r + 1) + ';grid-column:' + (c + 1) + '"></div>';
@@ -270,24 +205,21 @@ TT.r3.run = function () {
     gridHtml += '</div></div>';
 
     var cwHintAlreadyUsed = !!cwAns.__cwHintUsed || !!TT.getState("r3").cwHintUsed;
-
-    var acrossHtml = '<h3 style="color:var(--cyan);margin-bottom:8px">➡️ Left to Right (Across)</h3><ul class="clue-list" id="acrossList">';
+    var acrossHtml = '<h3 style="color:var(--cyan);margin-bottom:8px">➡️ Across</h3><ul class="clue-list" id="acrossList">';
     acrossClues.forEach(function (cl) {
-      acrossHtml += '<li class="clue-item" id="clueItem_across_' + cl.num + '" data-num="' + cl.num + '" data-dir="across">' +
-        '<b>' + cl.num + '.</b> ' + TT.esc(cl.clue) + ' <span class="hint">(' + cl.len + ' letters)</span></li>';
+      acrossHtml += '<li class="clue-item" id="clueItem_across_' + cl.num + '" data-num="' + cl.num + '" data-dir="across"><b>' + cl.num + '.</b> ' + TT.esc(cl.clue) + ' <span class="hint">(' + cl.len + ' letters)</span></li>';
     });
     acrossHtml += '</ul>';
 
-    var downHtml = '<h3 style="color:var(--warn);margin-bottom:8px">⬇️ Top to Bottom (Down)</h3><ul class="clue-list" id="downList">';
+    var downHtml = '<h3 style="color:var(--warn);margin-bottom:8px">️ Down</h3><ul class="clue-list" id="downList">';
     downClues.forEach(function (cl) {
-      downHtml += '<li class="clue-item" id="clueItem_down_' + cl.num + '" data-num="' + cl.num + '" data-dir="down">' +
-        '<b>' + cl.num + '.</b> ' + TT.esc(cl.clue) + ' <span class="hint">(' + cl.len + ' letters)</span></li>';
+      downHtml += '<li class="clue-item" id="clueItem_down_' + cl.num + '" data-num="' + cl.num + '" data-dir="down"><b>' + cl.num + '.</b> ' + TT.esc(cl.clue) + ' <span class="hint">(' + cl.len + ' letters)</span></li>';
     });
     downHtml += '</ul>';
 
     var hintBannerHtml = cwHintAlreadyUsed
       ? '<div class="msg warn" style="margin:0 0 12px;padding:10px 14px;border-radius:10px">' +
-          '💡 <b>Crossword Hint:</b> "Remember the phase before, that is linked with crossword answer" <span style="font-size:11px;opacity:0.8">(−2 pts applied)</span>' +
+          '💡 <b>Hint:</b> "Remember the phase before, that is linked with crossword answer" <span style="font-size:11px;opacity:0.8">(−2 pts applied)</span>' +
         '</div>'
       : '';
 
@@ -296,15 +228,15 @@ TT.r3.run = function () {
         hintBannerHtml +
         '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px;padding:10px 14px;background:rgba(3,11,24,.85);border:1px solid rgba(77,216,255,.2);border-radius:10px">' +
           '<div style="flex:1;min-width:240px">' +
-            '<span class="hint" style="font-size:11px;text-transform:uppercase;letter-spacing:1px">Current Active Clue:</span><br>' +
+            '<span class="hint" style="font-size:11px;text-transform:uppercase;letter-spacing:1px">Active Clue:</span><br>' +
             '<b id="cwBannerTitle" style="color:var(--cyan);font-size:16px;margin-right:6px">1 Across:</b> ' +
             '<span id="cwBannerText" style="font-size:14px">Select a clue below</span>' +
           '</div>' +
           '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">' +
-            '<button class="btn small ghost" id="cwToggleDirBtn" type="button" style="border-color:var(--cyan)">🔄 Switch Direction</button>' +
+            '<button class="btn small ghost" id="cwToggleDirBtn" type="button" style="border-color:var(--cyan)">🔄 Switch</button>' +
             (!cwHintAlreadyUsed
               ? '<button class="btn small warn" id="cwHintBtn" type="button">💡 Hint (−2 pts)</button>'
-              : '<span style="font-size:12px;color:var(--warn);font-weight:600">💡 Hint Used (−2 pts)</span>') +
+              : '<span style="font-size:12px;color:var(--warn);font-weight:600">Hint Used</span>') +
           '</div>' +
         '</div>' +
         gridHtml +
@@ -317,35 +249,20 @@ TT.r3.run = function () {
       '</div>';
 
     function updateHighlight() {
-      document.querySelectorAll(".cw-cell").forEach(function (el) {
-        el.classList.remove("active-word", "active-cell");
-      });
-      document.querySelectorAll(".clue-item").forEach(function (el) {
-        el.classList.remove("active-clue");
-      });
-
+      document.querySelectorAll(".cw-cell").forEach(function (el) { el.classList.remove("active-word", "active-cell"); });
+      document.querySelectorAll(".clue-item").forEach(function (el) { el.classList.remove("active-clue"); });
       var bTitle = document.getElementById("cwBannerTitle");
       var bText  = document.getElementById("cwBannerText");
       var bBtn   = document.getElementById("cwToggleDirBtn");
-
       if (currentClue) {
         if (bTitle) {
-          bTitle.textContent = currentClue.num + " " + (currentClue.dir === "across" ? "Across ➡️" : "Down ⬇️") + ":";
+          bTitle.textContent = currentClue.num + " " + (currentClue.dir === "across" ? "Across ️" : "Down ⬇️") + ":";
           bTitle.style.color = currentClue.dir === "across" ? "var(--cyan)" : "var(--warn)";
         }
         if (bText) bText.textContent = currentClue.clue + " (" + currentClue.len + " letters)";
-
-        if (bBtn) {
-          bBtn.textContent = currentDir === "across" ? "➡️ Typing Left → Right (Click to switch ⬇️)" : "⬇️ Typing Top → Down (Click to switch ➡️)";
-          bBtn.style.color = currentDir === "across" ? "var(--cyan)" : "var(--warn)";
-        }
-
+        if (bBtn) bBtn.textContent = currentDir === "across" ? "️ Typing Left→Right" : "️ Typing Top→Down";
         var item = document.getElementById("clueItem_" + currentClue.dir + "_" + currentClue.num);
-        if (item) {
-          item.classList.add("active-clue");
-          // item.scrollIntoView({ block: "nearest", behavior: "smooth" }); // This causes the whole page to scroll down on mobile!
-        }
-
+        if (item) item.classList.add("active-clue");
         for (var i = 0; i < currentClue.len; i++) {
           var wr = currentClue.dir === "across" ? currentClue.r : currentClue.r + i;
           var wc = currentClue.dir === "across" ? currentClue.c + i : currentClue.c;
@@ -353,7 +270,6 @@ TT.r3.run = function () {
           if (cellEl) cellEl.classList.add("active-word");
         }
       }
-
       if (activeCell) {
         var curEl = document.getElementById("cwc_" + activeCell.r + "_" + activeCell.c);
         if (curEl) curEl.classList.add("active-cell");
@@ -367,17 +283,10 @@ TT.r3.run = function () {
       var inp = cellEl.querySelector("input");
       if (inp) {
         programmaticFocus = true;
-        var sx = window.scrollX || document.documentElement.scrollLeft;
-        var sy = window.scrollY || document.documentElement.scrollTop;
         inp.focus({ preventScroll: true });
-        window.scrollTo(sx, sy);
-        
         activeCell = { r: r, c: c };
         updateHighlight();
-        setTimeout(function () { 
-          window.scrollTo(sx, sy); // Double check for async scroll
-          programmaticFocus = false; 
-        }, 0);
+        setTimeout(function () { programmaticFocus = false; }, 50);
       }
     }
 
@@ -390,12 +299,10 @@ TT.r3.run = function () {
       if (autoFocus) focusCellDirect(clue.r, clue.c);
     }
 
-    // Clue click handlers
     acrossClues.forEach(function (cl) {
       var item = document.getElementById("clueItem_across_" + cl.num);
       if (item) item.onclick = function () { setActiveClue(cl, true); };
     });
-
     downClues.forEach(function (cl) {
       var item = document.getElementById("clueItem_down_" + cl.num);
       if (item) item.onclick = function () { setActiveClue(cl, true); };
@@ -420,19 +327,14 @@ TT.r3.run = function () {
       };
     }
 
-    // Crossword hint button with confirmation popup
     var cwHintBtn = document.getElementById("cwHintBtn");
     if (cwHintBtn) {
       cwHintBtn.onclick = function () {
-        TT.confirmBox(
-          "If you use this you will lose more marks",
-          function () {
-            TT.setState("r3", { cwHintUsed: true });
-            TT.toast("Hint: Remember the phase before, that is linked with crossword answer", "warn");
-            renderB();
-          },
-          "Use Hint"
-        );
+        TT.confirmBox("If you use this you will lose more marks", function () {
+          TT.setState("r3", { cwHintUsed: true });
+          TT.toast("Hint: Remember the phase before, that is linked with crossword answer", "warn");
+          renderB();
+        }, "Use Hint");
       };
     }
 
@@ -456,28 +358,22 @@ TT.r3.run = function () {
       if (ok) focusCellDirect(prevR, prevC);
     }
 
-    // Grid inputs binding
     document.querySelectorAll(".cw-cell input").forEach(function (inp) {
       var r = parseInt(inp.getAttribute("data-r"), 10);
       var c = parseInt(inp.getAttribute("data-c"), 10);
-
+      
       inp.onfocus = function () {
+        this.select();
         if (programmaticFocus) return;
         activeCell = { r: r, c: c };
         var key = r + "," + c;
         var cClues = cellClues[key] || {};
-        if (cClues[currentDir]) {
-          currentClue = cClues[currentDir];
-        } else if (cClues.across) {
-          currentClue = cClues.across;
-          currentDir = "across";
-        } else if (cClues.down) {
-          currentClue = cClues.down;
-          currentDir = "down";
-        }
+        if (cClues[currentDir]) currentClue = cClues[currentDir];
+        else if (cClues.across) { currentClue = cClues.across; currentDir = "across"; }
+        else if (cClues.down) { currentClue = cClues.down; currentDir = "down"; }
         updateHighlight();
       };
-
+      
       inp.oninput = function () {
         var v = inp.value.toUpperCase();
         inp.value = v.slice(-1);
@@ -485,39 +381,19 @@ TT.r3.run = function () {
         TT.setState("r3", { cw: cwAns });
         if (inp.value) stepNext(r, c);
       };
-
+      
       inp.onkeydown = function (e) {
         if (e.key === "Backspace") {
-          if (!inp.value) {
-            stepPrev(r, c);
-            e.preventDefault();
-          } else {
-            inp.value = "";
-            cwAns[r + "," + c] = "";
-            TT.setState("r3", { cw: cwAns });
-            stepPrev(r, c);
-            e.preventDefault();
-          }
+          if (!inp.value) { stepPrev(r, c); e.preventDefault(); }
+          else { inp.value = ""; cwAns[r + "," + c] = ""; TT.setState("r3", { cw: cwAns }); stepPrev(r, c); e.preventDefault(); }
         } else if (e.key === "ArrowLeft") {
-          currentDir = "across";
-          if (cellClues[r + "," + c] && cellClues[r + "," + c].across) currentClue = cellClues[r + "," + c].across;
-          stepPrev(r, c);
-          e.preventDefault();
+          currentDir = "across"; if (cellClues[r + "," + c] && cellClues[r + "," + c].across) currentClue = cellClues[r + "," + c].across; stepPrev(r, c); e.preventDefault();
         } else if (e.key === "ArrowRight") {
-          currentDir = "across";
-          if (cellClues[r + "," + c] && cellClues[r + "," + c].across) currentClue = cellClues[r + "," + c].across;
-          stepNext(r, c);
-          e.preventDefault();
+          currentDir = "across"; if (cellClues[r + "," + c] && cellClues[r + "," + c].across) currentClue = cellClues[r + "," + c].across; stepNext(r, c); e.preventDefault();
         } else if (e.key === "ArrowUp") {
-          currentDir = "down";
-          if (cellClues[r + "," + c] && cellClues[r + "," + c].down) currentClue = cellClues[r + "," + c].down;
-          stepPrev(r, c);
-          e.preventDefault();
+          currentDir = "down"; if (cellClues[r + "," + c] && cellClues[r + "," + c].down) currentClue = cellClues[r + "," + c].down; stepPrev(r, c); e.preventDefault();
         } else if (e.key === "ArrowDown") {
-          currentDir = "down";
-          if (cellClues[r + "," + c] && cellClues[r + "," + c].down) currentClue = cellClues[r + "," + c].down;
-          stepNext(r, c);
-          e.preventDefault();
+          currentDir = "down"; if (cellClues[r + "," + c] && cellClues[r + "," + c].down) currentClue = cellClues[r + "," + c].down; stepNext(r, c); e.preventDefault();
         }
       };
     });
@@ -526,9 +402,6 @@ TT.r3.run = function () {
     if (activeCell) focusCellDirect(activeCell.r, activeCell.c);
   }
 
-  // ─────────────────────────────────────────────────────────────
-  // Navigation & Submissions
-  // ─────────────────────────────────────────────────────────────
   document.getElementById("tabA").onclick = renderA;
   document.getElementById("tabB").onclick = renderB;
 
@@ -553,5 +426,4 @@ TT.r3.run = function () {
 
   renderA();
 };
-
 })();
