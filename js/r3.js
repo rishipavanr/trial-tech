@@ -14,7 +14,7 @@ TT.r3.init = function () {
   var verdict = TT.enterRound("r3");
   if (verdict === "locked") {
     TT.keyGate("r3", "main", {
-      title: "️ Round 3 — Visual Logic",
+      title: "🖼️ Round 3 — Visual Logic",
       desc: "Part A: Guess the Tech Word · Part B: Dynamic Crossword"
     }, function () {
       TT.setState("r3", { entered: true });
@@ -79,7 +79,7 @@ TT.r3.run = function () {
           boxHtml += '<input class="letter-box' + (ch ? " filled" : "") + '"' +
             ' type="text" maxlength="1" placeholder="·"' +
             ' data-pid="' + p.id + '" data-idx="' + flatIdx + '"' +
-            ' value="' + TT.esc(ch) + '" autocomplete="off" spellcheck="false">';
+            ' value="' + TT.esc(ch) + '" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" inputmode="text">';
           flatIdx++;
         }
         boxHtml += '</div>';
@@ -195,7 +195,7 @@ TT.r3.run = function () {
         if (cell) {
           gridHtml += '<div class="cw-cell" id="cwc_' + r + '_' + c + '" style="grid-row:' + (r + 1) + ';grid-column:' + (c + 1) + '">';
           if (cell.n) gridHtml += '<span class="num">' + cell.n + '</span>';
-          gridHtml += '<input maxlength="1" placeholder="·" data-r="' + r + '" data-c="' + c + '" value="' + TT.esc(cwAns[r + "," + c] || "") + '" autocomplete="off">';
+          gridHtml += '<input maxlength="1" placeholder="·" data-r="' + r + '" data-c="' + c + '" value="' + TT.esc(cwAns[r + "," + c] || "") + '" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" inputmode="text">';
           gridHtml += '</div>';
         } else {
           gridHtml += '<div class="cw-cell blank" style="grid-row:' + (r + 1) + ';grid-column:' + (c + 1) + '"></div>';
@@ -211,7 +211,7 @@ TT.r3.run = function () {
     });
     acrossHtml += '</ul>';
 
-    var downHtml = '<h3 style="color:var(--warn);margin-bottom:8px">️ Down</h3><ul class="clue-list" id="downList">';
+    var downHtml = '<h3 style="color:var(--warn);margin-bottom:8px">⬇️ Down</h3><ul class="clue-list" id="downList">';
     downClues.forEach(function (cl) {
       downHtml += '<li class="clue-item" id="clueItem_down_' + cl.num + '" data-num="' + cl.num + '" data-dir="down"><b>' + cl.num + '.</b> ' + TT.esc(cl.clue) + ' <span class="hint">(' + cl.len + ' letters)</span></li>';
     });
@@ -233,7 +233,7 @@ TT.r3.run = function () {
             '<span id="cwBannerText" style="font-size:14px">Select a clue below</span>' +
           '</div>' +
           '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">' +
-            '<button class="btn small ghost" id="cwToggleDirBtn" type="button" style="border-color:var(--cyan)">🔄 Switch</button>' +
+            '<button class="btn small ghost" id="cwToggleDirBtn" type="button" style="border-color:var(--cyan)">🔄 Switch Dir</button>' +
             (!cwHintAlreadyUsed
               ? '<button class="btn small warn" id="cwHintBtn" type="button">💡 Hint (−2 pts)</button>'
               : '<span style="font-size:12px;color:var(--warn);font-weight:600">Hint Used</span>') +
@@ -256,11 +256,11 @@ TT.r3.run = function () {
       var bBtn   = document.getElementById("cwToggleDirBtn");
       if (currentClue) {
         if (bTitle) {
-          bTitle.textContent = currentClue.num + " " + (currentClue.dir === "across" ? "Across ️" : "Down ⬇️") + ":";
+          bTitle.textContent = currentClue.num + " " + (currentClue.dir === "across" ? "Across ➡️" : "Down ⬇️") + ":";
           bTitle.style.color = currentClue.dir === "across" ? "var(--cyan)" : "var(--warn)";
         }
         if (bText) bText.textContent = currentClue.clue + " (" + currentClue.len + " letters)";
-        if (bBtn) bBtn.textContent = currentDir === "across" ? "️ Typing Left→Right" : "️ Typing Top→Down";
+        if (bBtn) bBtn.textContent = currentDir === "across" ? "➡️ Typing Across" : "⬇️ Typing Down";
         var item = document.getElementById("clueItem_" + currentClue.dir + "_" + currentClue.num);
         if (item) item.classList.add("active-clue");
         for (var i = 0; i < currentClue.len; i++) {
@@ -286,7 +286,9 @@ TT.r3.run = function () {
         inp.focus({ preventScroll: true });
         activeCell = { r: r, c: c };
         updateHighlight();
-        setTimeout(function () { programmaticFocus = false; }, 50);
+        setTimeout(function () { 
+          programmaticFocus = false; 
+        }, 50);
       }
     }
 
@@ -363,7 +365,6 @@ TT.r3.run = function () {
       var c = parseInt(inp.getAttribute("data-c"), 10);
       
       inp.onfocus = function () {
-        this.select();
         if (programmaticFocus) return;
         activeCell = { r: r, c: c };
         var key = r + "," + c;
@@ -399,7 +400,6 @@ TT.r3.run = function () {
     });
 
     updateHighlight();
-    if (activeCell) focusCellDirect(activeCell.r, activeCell.c);
   }
 
   document.getElementById("tabA").onclick = renderA;

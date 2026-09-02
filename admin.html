@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TECH TRIVIA - Admin</title>
-<link rel="stylesheet" href="css/style.css?v=2.6">
+<link rel="stylesheet" href="css/style.css?v=3.0">
 </head>
 <body>
 
@@ -13,19 +13,19 @@
 
 <main class="wrap" id="main"></main>
 
-<script src="js/config.js"></script>
-<script src="js/data.js"></script>
-<script src="js/core.js"></script>
-<script src="js/common.js"></script>
+<script src="js/config.js?v=3.0"></script>
+<script src="js/data.js?v=3.0"></script>
+<script src="js/core.js?v=3.0"></script>
+<script src="js/common.js?v=3.0"></script>
 
 <!-- score.js: loads archived scores if the file has been replaced with a real snapshot.
      Silent fail if missing or empty — admin panel handles both cases gracefully. -->
 <script>
 window.TT_SCORES = window.TT_SCORES || [];
 </script>
-<script src="js/score.js" onerror="/* score.js not found — archive section hidden */"></script>
+<script src="js/score.js?v=3.0" onerror="/* score.js not found — archive section hidden */"></script>
 
-<script src="js/admin.js"></script>
+<script src="js/admin.js?v=3.0"></script>
 <script>
 (function () {
   TT.boot(TT_DATA.brand.event + " - Admin Panel");
