@@ -92,7 +92,7 @@ TT.r3.run = function () {
         '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">' +
           '<h3>Puzzle ' + (i + 1) + ' <span class="hint">(' + wordDesc + ' letters)</span></h3>' +
           '<div style="display:flex;gap:6px">' +
-            '<button class="btn ghost small hintBtn" data-id="' + p.id + '" data-n="1"' + (hUsed >= 1 ? " disabled" : "") + '>Hint 1 (-1 pt)</button>' +
+            '<button class="btn ghost small hintBtn" data-id="' + p.id + '" data-n="1"' + (hUsed >= 1 ? " disabled" : "") + '>Hint 1 (Free)</button>' +
             '<button class="btn ghost small hintBtn" data-id="' + p.id + '" data-n="2"' + (hUsed >= 2 ? " disabled" : "") + '>Hint 2 (-1 pt)</button>' +
           '</div>' +
         '</div>' +

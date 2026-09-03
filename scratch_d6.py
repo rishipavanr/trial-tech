@@ -1,0 +1,12 @@
+stack = []
+print("initially stack is empty :",stack)
+stack.append('x')
+stack.append('y')
+stack.append('z')
+print("After PUSHING stack is :")
+print(stack)
+print("After POPed from stack: ")
+print(stack.pop())
+print(stack.pop())
+print("any stack after elements are poped:")
+print(stack)

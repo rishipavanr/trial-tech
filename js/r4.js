@@ -589,9 +589,17 @@ TT.r4.run = function () {
         TT.setState("r4", { solved: solvedMap, partials: partialsMap });
         TT.toast(res.cheatMsg, "bad");
       } else if (!res.ok) {
+        var pts = res.pts || 0;
         if (out) { out.className = "io-box err"; out.textContent = "ERROR:\n" + res.err + (res.out ? "\n─── output ───\n" + res.out : ""); }
-        if (msg) msg.textContent = "❌ Execution Error";
+        if (msg) msg.textContent = "❌ Execution Error" + (pts > 0 ? " — " + pts + " pts for effort" : "");
         if (card) card.style.borderColor = "";
+        if (pts > 0) {
+          if (badge) badge.innerHTML = '<span style="color:var(--warn)">⚠️ Effort: ' + pts + ' pts</span>';
+          solvedMap[id] = false;
+          partialsMap[id] = pts;
+          TT.setState("r4", { solved: solvedMap, partials: partialsMap });
+          TT.toast("Error, but " + pts + " pts awarded for effort", "warn");
+        }
       } else if (res.fullMatch) {
         if (out) { out.className = "io-box ok"; out.textContent = res.out || "(pass)"; }
         if (msg) msg.textContent = "✅ Output verified — full " + taskPts + " pts secured!";
@@ -714,8 +722,14 @@ TT.r4.run = function () {
       if (solvedMap[tid] === true) {
         n++;
         baseTotal += taskPts;
-      } else if (partialsMap[tid]) {
-        partialTotal += partialsMap[tid];
+      } else {
+        var pts = partialsMap[tid] || 0;
+        // Award credits for trying based on lines of code (max 40% of taskPts)
+        if (pts === 0 && st.drafts && st.drafts[tid]) {
+          var lines = st.drafts[tid].split('\n').filter(function(l) { return l.trim().length > 0 && !l.trim().startsWith('#'); }).length;
+          pts = Math.min(Math.floor(taskPts * 0.4), lines);
+        }
+        partialTotal += pts;
       }
     });
 

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html><body>
+<script>
+  var indexURL = new URL("pyodide/", location.href).href;
+  var mjsURL = new URL("pyodide/pyodide.mjs", location.href).href;
+  var workerCode =
+    "import { loadPyodide } from " + JSON.stringify(mjsURL) + ";\n" +
+    "let py = null;\n" +
+    "const indexURL = " + JSON.stringify(indexURL) + ";\n" +
+    "self.onmessage = async function(e) {\n" +
+    "  const d = e.data;\n" +
+    "  try {\n" +
+    "    if (!py) {\n" +
+    "      py = await loadPyodide({ indexURL: indexURL });\n" +
+    "      py.runPython('import sys, io\\nsys.stdout=io.StringIO()\\nsys.stderr=sys.stdout');\n" +
+    "    }\n" +
+    "    if (d.warm) { self.postMessage({ warm: true }); return; }\n" +
+    "    py.runPython('sys.stdout=io.StringIO()\\nsys.stderr=sys.stdout');\n" +
+    "    try {\n" +
+    "      await py.runPythonAsync(d.code);\n" +
+    "    } catch(err) {\n" +
+    "      self.postMessage({ ok: false, err: String((err && err.message) || err), out: String(py.runPython('sys.stdout.getvalue()')) });\n" +
+    "      return;\n" +
+    "    }\n" +
+    "    self.postMessage({ ok: true, out: String(py.runPython('sys.stdout.getvalue()')) });\n" +
+    "  } catch(err) {\n" +
+    "    self.postMessage({ ok: false, err: String((err && err.message) || err) });\n" +
+    "  }\n" +
+    "};\n";
+
+  var blob = new Blob([workerCode], { type: "application/javascript" });
+  var w = new Worker(URL.createObjectURL(blob), { type: "module" });
+  w.onmessage = function(e) {
+      console.log("Worker replied:", e.data);
+      document.body.innerHTML += "<p>" + JSON.stringify(e.data) + "</p>";
+  };
+  w.onerror = function(e) {
+      console.error("Worker error:", e);
+      document.body.innerHTML += "<p>ERROR: " + e.message + "</p>";
+  };
+  w.postMessage({ warm: true });
+</script>
+</body></html>

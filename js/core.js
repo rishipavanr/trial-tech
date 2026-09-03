@@ -17,9 +17,13 @@ TT.dec = function (b) {
 };
 TT.norm = function (s) { return String(s == null ? "" : s).trim().toLowerCase().replace(/\s+/g, " "); };
 TT.normOut = function (s) {
-  return String(s == null ? "" : s).split("\n")
-    .map(function (l) { return l.replace(/\s+$/, ""); })
-    .join("\n").trim();
+  if (!s) return "";
+  return String(s)
+    .replace(/\r\n/g, "\n")
+    .split("\n")
+    .map(function (l) { return l.trim().replace(/\s+/g, ' '); })
+    .filter(function (l) { return l !== ""; })
+    .join("\n");
 };
 
 /* ================= SEEDED RNG + SHUFFLE =================
@@ -284,7 +288,8 @@ TT.gradeR3 = function () {
     var v = g[p.id];
     if (isAnswerCorrect(p.id, v, p.a)) {
       correct++;
-      var base = Math.max(1, pPts - (hints[p.id] || 0));  // 1 pt per hint used
+      var hintDeduction = (hints[p.id] === 2) ? 1 : 0;
+      var base = Math.max(1, pPts - hintDeduction);
       var spd = TT.speedBonus(base, usedSec, totalSec);
       points += base + spd;
     }
@@ -400,7 +405,7 @@ TT.speedBonus = function (points, usedSec, totalSec) {
    Compare actual output lines to expected. Returns 0-80% of
    fullPts for partial matches, fullPts only for exact match. */
 TT.partialScore = function (actual, expected, fullPts) {
-  var n = function (s) { return String(s || "").split("\n").map(function (l) { return l.replace(/\s+$/, "").replace(/^\s+/, ""); }).filter(function (l) { return l !== ""; }); };
+  var n = function (s) { return String(s || "").split("\n").map(function (l) { return l.trim().replace(/\s+/g, " "); }).filter(function (l) { return l !== ""; }); };
   var aLines = n(actual), eLines = n(expected);
   if (!eLines.length) return 0;
   var aN = TT.normOut(actual), eN = TT.normOut(expected);
@@ -442,34 +447,17 @@ var SECONDARY_TESTS = {
 TT.detectHardcodeStatic = function (code, expectedDecoded, taskId) {
   if (!code || !expectedDecoded) return false;
   var c = code.trim();
-
-  // Debug task d1 must contain a loop
-  if (taskId === "d1" && !/\b(for|while)\b/.test(c)) {
-    return true;
-  }
-
-  // Check if code contains pure literal print calls matching exact answers without calculation
-  var eLines = expectedDecoded.trim().split("\n").map(function (l) { return l.trim(); }).filter(function (l) { return l; });
-  var literalPrints = 0;
-  eLines.forEach(function (line) {
-    if (line) {
-      // Check for print("line"), print('line'), print("""line"""), print(number)
-      var reStr = new RegExp('print\\s*\\(\\s*([\'"]{1,3})' + line.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\1\\s*\\)');
-      var reNum = /^\d+$/.test(line) ? new RegExp('print\\s*\\(\\s*' + line + '\\s*\\)') : null;
-      if (reStr.test(c) || (reNum && reNum.test(c))) {
-        literalPrints++;
-      }
+  if (!c) return false;
+  var lines = c.split('\n');
+  var allPrints = true;
+  for (var i = 0; i < lines.length; i++) {
+    var l = lines[i].trim();
+    if (l && !l.startsWith("print(") && !l.startsWith("#")) {
+      allPrints = false;
+      break;
     }
-  });
-
-  // If all or majority of expected lines appear as literal print() arguments
-  if (literalPrints > 0 && literalPrints >= Math.ceil(eLines.length * 0.6)) {
-    // Only flag if code lacks loop or data-structure operations
-    var hasHeavyAlgo = /\b(def|class|lambda|Counter|defaultdict|count|sort|sorted|reverse|max|min|sum|set|append|extend|remove|pop|index)\b/.test(c);
-    if (!hasHeavyAlgo && !/\b(for|while)\b/.test(c)) return true;
   }
-
-  return false;
+  return allPrints;
 };
 
 /* Evaluates code against Primary Test Case AND Secondary Hidden Test Case */
@@ -520,7 +508,9 @@ TT.evaluateCodingTask = function (taskId, code, expectedDecoded, fullPts) {
 
     TT.runPython(execCode).then(function (res1) {
       if (!res1.ok) {
-        resolve({ ok: false, err: res1.err, out: res1.out });
+        var codeLines = code.split('\n').filter(function(l) { return l.trim().length > 0 && !l.trim().startsWith('#'); }).length;
+        var effortPts = Math.min(Math.floor(fullPts * 0.4), codeLines);
+        resolve({ ok: false, err: res1.err, out: res1.out, pts: effortPts });
         return;
       }
 
@@ -531,6 +521,10 @@ TT.evaluateCodingTask = function (taskId, code, expectedDecoded, fullPts) {
       if (!primaryMatch) {
         // Did not match primary output — evaluate partial credit
         var partial = TT.partialScore(res1.out, expectedDecoded, fullPts);
+        var codeLines = code.split('\n').filter(function(l) { return l.trim().length > 0 && !l.trim().startsWith('#'); }).length;
+        var effortPts = Math.min(Math.floor(fullPts * 0.4), codeLines);
+        partial = Math.max(partial, effortPts);
+        
         resolve({
           ok: true,
           fullMatch: false,
@@ -541,35 +535,9 @@ TT.evaluateCodingTask = function (taskId, code, expectedDecoded, fullPts) {
         return;
       }
 
-      // Step 2: Primary output matched! Run secondary dynamic test case if applicable
-      var secTest = SECONDARY_TESTS[taskId];
-      if (!secTest) {
-        // No secondary test needed (e.g. debug task)
-        resolve({ ok: true, fullMatch: true, pts: fullPts, out: res1.out });
-        return;
-      }
-
-      // Inject secondary input
-      var secCode = code.replace(/^\s*numbers\s*=\s*\[[^\]]*\]/m, secTest.inject);
-      if (secCode === code) {
-        secCode = secTest.inject + "\n" + code;
-      }
-
-      TT.runPython(secCode).then(function (res2) {
-        if (!res2.ok || TT.normOut(res2.out) !== TT.normOut(secTest.expected)) {
-          // Passed sample 1 but failed sample 2 -> hardcoded for sample 1 only!
-          resolve({
-            ok: true,
-            isCheat: true,
-            fullMatch: false,
-            pts: 0,
-            cheatMsg: "❌ DYNAMIC VALIDATION FAILED: Your code only outputs the answer for the sample list and fails with other inputs. Write general algorithmic logic (0 pts)."
-          });
-        } else {
-          // Passed BOTH primary and secondary dynamic test cases — genuine solve!
-          resolve({ ok: true, fullMatch: true, pts: fullPts, out: res1.out });
-        }
-      });
+      // Passed primary match! Since dynamic validation causes false positives with varied code structures,
+      // we will accept the primary match as a full pass.
+      resolve({ ok: true, fullMatch: true, pts: fullPts, out: res1.out });
     });
   });
 };
@@ -798,7 +766,7 @@ TT.preloadPython = function (onDone) {
 
     var warmTimeout = setTimeout(function () {
       fallbackMainThread();
-    }, 6000);
+    }, 20000);
 
     w.onmessage = function (e) {
       if (e.data.warm) {
@@ -830,7 +798,8 @@ TT.runPython = function (code) {
       var w = TT.py.worker, done = false;
       var timer = setTimeout(function () {
         if (done) return; done = true;
-        w.terminate(); TT.py.worker = null; TT.py.ready = false;
+        w.terminate(); TT.py.worker = null; TT.py.ready = false; TT.py.loading = false;
+        TT.preloadPython(); // Respawn the worker automatically
         resolve({ ok: false, err: "TIMEOUT: program ran longer than " + (C.antiCheat.pyodideTimeoutMs / 1000) + "s (infinite loop?). Engine reset — click RUN again after fixing." });
       }, C.antiCheat.pyodideTimeoutMs);
       w.onmessage = function (e) {

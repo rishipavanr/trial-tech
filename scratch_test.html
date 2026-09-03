@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<body>
+<div id="log"></div>
+<script>
+  function log(msg) {
+    document.getElementById("log").innerText += msg + "\n";
+  }
+  var indexURL = "http://localhost:8086/pyodide/";
+  var mjsURL = "http://localhost:8086/pyodide/pyodide.mjs";
+  
+  var workerCode =
+    "import { loadPyodide } from " + JSON.stringify(mjsURL) + ";\n" +
+    "let py = null;\n" +
+    "const indexURL = " + JSON.stringify(indexURL) + ";\n" +
+    "self.onmessage = async function(e) {\n" +
+    "  try {\n" +
+    "    if (!py) {\n" +
+    "      py = await loadPyodide({ indexURL: indexURL });\n" +
+    "    }\n" +
+    "    self.postMessage({ ok: true, msg: 'Worker Loaded Pyodide!' });\n" +
+    "  } catch(err) {\n" +
+    "    self.postMessage({ ok: false, err: String((err && err.message) || err) });\n" +
+    "  }\n" +
+    "};\n";
+
+  var blob = new Blob([workerCode], { type: "application/javascript" });
+  var w = new Worker(URL.createObjectURL(blob), { type: "module" });
+  w.onmessage = function(e) {
+      log("Worker replied: " + JSON.stringify(e.data));
+      fetch('http://localhost:8086/log?msg=' + encodeURIComponent(JSON.stringify(e.data)));
+  };
+  w.onerror = function(e) {
+      log("Worker error: " + e.message);
+      fetch('http://localhost:8086/log?msg=' + encodeURIComponent("Worker error: " + e.message));
+  };
+  w.postMessage({ warm: true });
+</script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-/* TECH TRIVIA — js/data.js — exported 9/1/2026, 1:18:43 PM */
+/* TECH TRIVIA — js/data.js — exported 2/9/2026, 11:48:56 am */
 window.TT_DATA = {
   "version": 1,
   "brand": {
@@ -510,18 +510,20 @@ window.TT_DATA = {
         },
         {
           "id": "tb_r2_3",
-          "t": "Dummy Question 3 for Corporate Clue Tiebreaker?",
+          "t": "which AI is used for Research Purpose ?",
+          "img": null,
           "o": [
-            "Option A",
-            "Option B",
-            "Option C",
-            "Option D"
+            "Gemini",
+            "Claude",
+            "Grok",
+            "Deepseek"
           ],
           "a": "MA=="
         },
         {
           "id": "tb_r2_4",
-          "t": "Dummy Question 4 for Corporate Clue Tiebreaker?",
+          "t": "What is the full form of AGI",
+          "img": null,
           "o": [
             "Option A",
             "Option B",
@@ -532,14 +534,15 @@ window.TT_DATA = {
         },
         {
           "id": "tb_r2_5",
-          "t": "Dummy Question 5 for Corporate Clue Tiebreaker?",
+          "t": "What is AI used for ?",
+          "img": null,
           "o": [
-            "Option A",
-            "Option B",
-            "Option C",
-            "Option D"
+            "Research",
+            "creation",
+            "Coding",
+            "All"
           ],
-          "a": "MA=="
+          "a": "Mw=="
         }
       ]
     },
@@ -851,7 +854,7 @@ window.TT_DATA = {
       ],
       "hint1": "Protects information",
       "hint2": "Important for online security",
-      "clue": "Placeholder 6",
+      "clue": "Placeholder 6 : Important for online security",
       "a": "RW5jcnlwdGlvbg=="
     },
     {
@@ -864,7 +867,7 @@ window.TT_DATA = {
       ],
       "hint1": "Used in server and PC",
       "hint2": "Its mascot is a penguin",
-      "clue": "Placeholder 7",
+      "clue": "Placeholder 7 : Its an Operating System : Its mascot is a penguin",
       "a": "TGludXg="
     },
     {
@@ -1001,54 +1004,71 @@ window.TT_DATA = {
       }
     ],
     "debug": [
-  {
-    "id": "D1",
-    "t": "Write a python program using a function to print fibonacci series up to n numbers",
-    "starter": "def fib(n):\n    num1 = 0\n    num2 = 1\n    next_number = num2\n    count = 2\n    print(num1, num2, end=\" \")\n    while count <= n:   # BUG 1: Should be < n to avoid extra number\n        print(next_number, end=\" \")\n        count += 1\n        num1, num2 = num2, next_number\n        next_number = num1 + num2\n\nn = int(input(\"enter the Limit: \"))\nfib(n)\nprint()",
-    "correct": "def fib(n):\n    if n == 0:\n        return\n    num1 = 0\n    num2 = 1\n    if n == 1:\n        print(num1)\n        return\n    print(num1, num2, end=\" \")\n    count = 2\n    while count < n:\n        next_number = num1 + num2\n        print(next_number, end=\" \")\n        count += 1\n        num1, num2 = num2, next_number\n\nn = int(input(\"enter the Limit: \"))\nfib(n)\nprint()",
-    "expected": "ZW50ZXIgdGhlIExpbWl0OiAxMAowIDEgMSAyIDMgNSA4IDEzIDIxIDM0IDU1IDg5IA==",
-    "mockInputs": ["10"]
-  },
-  {
-    "id": "D2",
-    "t": "Write a python program to enter two integers and perform all arithmetic operations on them.",
-    "starter": "num1 = int(input(\"Enter first number: \"))\nnum2 = int(input(\"Enter second number: \"))\n\nprint(\"Printing the result for all arithmetic operations:-\")\nprint(\"Addition: \", num1+num2)\nprint(\"Subtraction: \", num1-num2)\nprint(\"Multiplication: \", num1*num2)\nprint(\"Division: \", num1/num2)   # BUG 1: Division by zero if num2=0\nprint(\"Modulus: \", num1%num2)     # BUG 2: Modulus by zero if num2=0",
-    "correct": "num1 = int(input(\"Enter first number: \"))\nnum2 = int(input(\"Enter second number: \"))\n\nprint(\"Printing the result for all arithmetic operations:-\")\nprint(\"Addition: \", num1+num2)\nprint(\"Subtraction: \", num1-num2)\nprint(\"Multiplication: \", num1*num2)\nif num2 != 0:\n    print(\"Division: \", num1/num2)\n    print(\"Modulus: \", num1%num2)\nelse:\n    print(\"Division: Cannot divide by zero\")\n    print(\"Modulus: Cannot divide by zero\")",
-    "expected": "RW50ZXIgZmlyc3QgbnVtYmVyOiAxMApFbnRlciBzZWNvbmQgbnVtYmVyOiAzClByaW50aW5nIHRoZSByZXN1bHQgZm9yIGFsbCBhcml0aG1ldGljIG9wZXJhdGlvbnM6LQpBZGRpdGlvbjogIDEzClN1YnRyYWN0aW9uOiAgNwpNdWx0aXBsaWNhdGlvbjogIDMwCkRpdmlzaW9uOiAgMy4zMzMzMzMzMzMzMzM1Ck1vZHVsdXM6ICAx",
-    "mockInputs": ["10", "3"]
-  },
-  {
-    "id": "D3",
-    "t": "Write a Python program to accept length and width of a rectangle and compute its perimeter and area.",
-    "starter": "length = float(input(\"Enter length of the rectangle: \"))\nbreadth = float(input(\"Enter breadth of the rectangle: \"))\n\narea = length * breadth\nperimeter = 2 * (length * breadth)   # BUG: Should be 2*(length + breadth)\n\nprint(\"Area of rectangle = \", area)\nprint(\"Perimeter of rectangle = \", perimeter)",
-    "correct": "length = float(input(\"Enter length of the rectangle: \"))\nbreadth = float(input(\"Enter breadth of the rectangle: \"))\n\narea = length * breadth\nperimeter = 2 * (length + breadth)\n\nprint(\"Area of rectangle = \", area)\nprint(\"Perimeter of rectangle = \", perimeter)",
-    "expected": "RW50ZXIgbGVuZ3RoIG9mIHRoZSByZWN0YW5nbGU6IDUKRW50ZXIgYnJlYWR0aCBvZiB0aGUgcmVjdGFuZ2xlOiAzCkFyZWEgb2YgcmVjdGFuZ2xlID0gIDE1LjAKUGVyaW1ldGVyIG9mIHJlY3RhbmdsZSA9ICAxNi4w",
-    "mockInputs": ["5", "3"]
-  },
-  {
-    "id": "D4",
-    "t": "Write a Menu driven program in python to find factorial, and sum of natural Numbers using a function",
-    "starter": "def fact(n):\n    return 1 if (n==1 or n==0) else n * fact(n-1)\ndef sum_n(n):\n    return 0 if (n==0) else n + sum_n(n-1)\nnum = int(input(\"Enter any number: \"))\nprint(\"1-To find the factorial, 2-To find the sum 3-Exit\")\nopt=int(input(\"Enter the option 1-3 \"))\nif (opt==1):\n    print(\"Factorial of \",num,\"is : \",fact(num))\nelse:\n    if(opt==2):\n        print(\"Sum of \",num,\"is : \",sum_n(num))\n    else:\n        print(\" \")\n# BUG 1: No handling for negative numbers (infinite recursion)\n# BUG 2: Option 3 prints a space instead of exiting",
-    "correct": "def fact(n):\n    if n < 0:\n        return None\n    return 1 if (n==1 or n==0) else n * fact(n-1)\ndef sum_n(n):\n    if n < 0:\n        return None\n    return 0 if (n==0) else n + sum_n(n-1)\nnum = int(input(\"Enter any number: \"))\nprint(\"1-To find the factorial, 2-To find the sum 3-Exit\")\nopt=int(input(\"Enter the option 1-3 \"))\nif (opt==1):\n    if num < 0:\n        print(\"Factorial not defined for negative numbers\")\n    else:\n        print(\"Factorial of \",num,\"is : \",fact(num))\nelif (opt==2):\n    if num < 0:\n        print(\"Sum not defined for negative numbers\")\n    else:\n        print(\"Sum of \",num,\"is : \",sum_n(num))\nelse:\n    print(\"Exiting...\")",
-    "expected": "RW50ZXIgYW55IG51bWJlcjogNQoxLVRvIGZpbmQgdGhlIGZhY3RvcmlhbCwgMi1UbyBmaW5kIHRoZSBzdW0gMy1FeGl0CkVudGVyIHRoZSBvcHRpb24gMS0zIDEKRmFjdG9yaWFsIG9mICA1IGlzIDogMTIw",
-    "mockInputs": ["5", "1"]
-  },
-  {
-    "id": "D5",
-    "t": "Write a program that prints minimum and maximum of five numbers entered by the user.",
-    "starter": "smallest = 0\nlargest = 0\nfor a in range(0,5):\n    x = int(input(\"Enter the number: \"))\n    if a == 0:\n    smallest = largest = x   # BUG 1: Indentation error\n    if(x < smallest):        # BUG 2: Indentation error (should be inside loop)\n        smallest = x\n    if(x > largest):\n        largest = x\nprint(\"The smallest number is\",smallest)\nprint(\"The largest number is \",largest)",
-    "correct": "smallest = 0\nlargest = 0\nfor a in range(5):\n    x = int(input(\"Enter the number: \"))\n    if a == 0:\n        smallest = largest = x\n    else:\n        if x < smallest:\n            smallest = x\n        if x > largest:\n            largest = x\nprint(\"The smallest number is\", smallest)\nprint(\"The largest number is\", largest)",
-    "expected": "RW50ZXIgdGhlIG51bWJlcjogNDUKRW50ZXIgdGhlIG51bWJlcjogMjMKRW50ZXIgdGhlIG51bWJlcjogNjcKRW50ZXIgdGhlIG51bWJlcjogMTIKRW50ZXIgdGhlIG51bWJlcjogODkKVGhlIHNtYWxsZXN0IG51bWJlciBpcyAxMgpUaGUgbGFyZ2VzdCBudW1iZXIgaXMgODk=",
-    "mockInputs": ["45", "23", "67", "12", "89"]
-  },
-  {
-    "id": "D6",
-    "t": "Write a python program to add and display elements from a stack using list",
-    "starter": "stack = []\nprint(\"initially stack is empty :\",stack)\nstack.append('x')\nstack.append('y')\nstack.append('z')\nprint(\"After PUSHING stack is :\")\nprint(stack)\nprint(\"After POPed from stack: \")\nprint(stack.pop())\nprint(stack.pop())\nprint(\"any stack after elements are poped:\")\nprint(stack)   # BUG: Stack still has 'x', but output suggests empty? Actually it prints ['x']",
-    "correct": "stack = []\nprint(\"initially stack is empty :\",stack)\nstack.append('x')\nstack.append('y')\nstack.append('z')\nprint(\"After PUSHING stack is :\")\nprint(stack)\nprint(\"After POPed from stack: \")\nprint(stack.pop())\nprint(stack.pop())\nprint(\"any stack after elements are poped:\")\nprint(stack)",
-    "expected": "aW5pdGlhbGx5IHN0YWNrIGlzIGVtcHR5IDogW10KQWZ0ZXIgUFVTSElORyBzdGFjayBpcyA6ClsneCcsICd5JywgJ3onXQpBZnRlciBQT1BlZCBmcm9tIHN0YWNrOiAKenkKQWZ0ZXIgUE9QZWQgZnJvbSBzdGFjazogCnkvCgphbnkgc3RhY2sgYWZ0ZXIgZWxlbWVudHMgYXJlIHBvcGVkOgpbeF0=",
-    "mockInputs": []
-  }
+      {
+        "id": "D1",
+        "t": "Write a python program using a function to print fibonacci series up to n numbers",
+        "starter": "def fib(n):\n    num1 = 0\n    num2 = 1\n    next_number = num2\n    count = 2\n    print(num1, num2, end=\" \")\n    while count <= n:\n        print(next_number, end=\" \")\n        count += 1\n        num1, num2 = num2, next_number\n        next_number = num1 + num2\n\nn = int(input(\"enter the Limit: \"))\nfib(n)\nprint()",
+        "correct": "def fib(n):\n    if n == 0:\n        return\n    num1 = 0\n    num2 = 1\n    if n == 1:\n        print(num1)\n        return\n    print(num1, num2, end=\" \")\n    count = 2\n    while count < n:\n        next_number = num1 + num2\n        print(next_number, end=\" \")\n        count += 1\n        num1, num2 = num2, next_number\n\nn = int(input(\"enter the Limit: \"))\nfib(n)\nprint()",
+        "expected": "ZW50ZXIgdGhlIExpbWl0OiAxMAowIDEgMSAyIDMgNSA4IDEzIDIxIDM0IAo=",
+        "mockInputs": [
+          "10"
+        ]
+      },
+      {
+        "id": "D2",
+        "t": "Write a python program to enter two integers and perform all arithmetic operations on them.",
+        "starter": "num1 = int(input(\"Enter first number: \"))\nnum2 = int(input(\"Enter second number: \"))\n\nprint(\"Printing the result for all arithmetic operations:-\")\nprint(\"Addition: \", num1+num2)\nprint(\"Subtraction: \", num1-num2)\nprint(\"Multiplication: \", num1*num2)\nprint(\"Division: \", num1/num2)\nprint(\"Modulus: \", num1%num2)",
+        "correct": "num1 = int(input(\"Enter first number: \"))\nnum2 = int(input(\"Enter second number: \"))\n\nprint(\"Printing the result for all arithmetic operations:-\")\nprint(\"Addition: \", num1+num2)\nprint(\"Subtraction: \", num1-num2)\nprint(\"Multiplication: \", num1*num2)\nif num2 != 0:\n    print(\"Division: \", num1/num2)\n    print(\"Modulus: \", num1%num2)\nelse:\n    print(\"Division: Cannot divide by zero\")\n    print(\"Modulus: Cannot divide by zero\")",
+        "expected": "RW50ZXIgZmlyc3QgbnVtYmVyOiAxMApFbnRlciBzZWNvbmQgbnVtYmVyOiAzClByaW50aW5nIHRoZSByZXN1bHQgZm9yIGFsbCBhcml0aG1ldGljIG9wZXJhdGlvbnM6LQpBZGRpdGlvbjogIDEzClN1YnRyYWN0aW9uOiAgNwpNdWx0aXBsaWNhdGlvbjogIDMwCkRpdmlzaW9uOiAgMy4zMzMzMzMzMzMzMzMzMzM1Ck1vZHVsdXM6ICAxCg==",
+        "mockInputs": [
+          "10",
+          "3"
+        ]
+      },
+      {
+        "id": "D3",
+        "t": "Write a Python program to accept length and width of a rectangle and compute its perimeter and area.",
+        "starter": "length = float(input(\"Enter length of the rectangle: \"))\nbreadth = float(input(\"Enter breadth of the rectangle: \"))\n\narea = length * breadth\nperimeter = 2 * (length * breadth)\n\nprint(\"Area of rectangle = \", area)\nprint(\"Perimeter of rectangle = \", perimeter)",
+        "correct": "length = float(input(\"Enter length of the rectangle: \"))\nbreadth = float(input(\"Enter breadth of the rectangle: \"))\n\narea = length * breadth\nperimeter = 2 * (length + breadth)\n\nprint(\"Area of rectangle = \", area)\nprint(\"Perimeter of rectangle = \", perimeter)",
+        "expected": "RW50ZXIgbGVuZ3RoIG9mIHRoZSByZWN0YW5nbGU6IDUKRW50ZXIgYnJlYWR0aCBvZiB0aGUgcmVjdGFuZ2xlOiAzCkFyZWEgb2YgcmVjdGFuZ2xlID0gIDE1LjAKUGVyaW1ldGVyIG9mIHJlY3RhbmdsZSA9ICAxNi4w",
+        "mockInputs": [
+          "5",
+          "3"
+        ]
+      },
+      {
+        "id": "D4",
+        "t": "Write a Menu driven program in python to find factorial, and sum of natural Numbers using a function",
+        "starter": "def fact(n):\n    return 1 if (n==1 or n==0) else n * fact(n-1)\ndef sum_n(n):\n    return 0 if (n==0) else n + sum_n(n-1)\nnum = int(input(\"Enter any number: \"))\nprint(\"1-To find the factorial, 2-To find the sum 3-Exit\")\nopt=int(input(\"Enter the option 1-3 \"))\nif (opt==1):\n    print(\"Factorial of \",num,\"is : \",fact(num))\nelse:\n    if(opt==2):\n        print(\"Sum of \",num,\"is : \",sum_n(num))\n    else:\n        print(\" \")",
+        "correct": "def fact(n):\n    if n < 0:\n        return None\n    return 1 if (n==1 or n==0) else n * fact(n-1)\ndef sum_n(n):\n    if n < 0:\n        return None\n    return 0 if (n==0) else n + sum_n(n-1)\nnum = int(input(\"Enter any number: \"))\nprint(\"1-To find the factorial, 2-To find the sum 3-Exit\")\nopt=int(input(\"Enter the option 1-3 \"))\nif (opt==1):\n    if num < 0:\n        print(\"Factorial not defined for negative numbers\")\n    else:\n        print(\"Factorial of \",num,\"is : \",fact(num))\nelif (opt==2):\n    if num < 0:\n        print(\"Sum not defined for negative numbers\")\n    else:\n        print(\"Sum of \",num,\"is : \",sum_n(num))\nelse:\n    print(\"Exiting...\")",
+        "expected": "RW50ZXIgYW55IG51bWJlcjogNQoxLVRvIGZpbmQgdGhlIGZhY3RvcmlhbCwgMi1UbyBmaW5kIHRoZSBzdW0gMy1FeGl0CkVudGVyIHRoZSBvcHRpb24gMS0zIDEKRmFjdG9yaWFsIG9mICA1IGlzIDogMTIw",
+        "mockInputs": [
+          "5",
+          "1"
+        ]
+      },
+      {
+        "id": "D5",
+        "t": "Write a program that prints minimum and maximum of five numbers entered by the user.",
+        "starter": "smallest = 0\nlargest = 0\nfor a in range(0,5):\n    x = int(input(\"Enter the number: \"))\n    if a == 0:\n    smallest = largest = x\n    if(x < smallest):\n        smallest = x\n    if(x > largest):\n        largest = x\nprint(\"The smallest number is\",smallest)\nprint(\"The largest number is \",largest)",
+        "correct": "smallest = 0\nlargest = 0\nfor a in range(5):\n    x = int(input(\"Enter the number: \"))\n    if a == 0:\n        smallest = largest = x\n    else:\n        if x < smallest:\n            smallest = x\n        if x > largest:\n            largest = x\nprint(\"The smallest number is\", smallest)\nprint(\"The largest number is\", largest)",
+        "expected": "RW50ZXIgdGhlIG51bWJlcjogNDUKRW50ZXIgdGhlIG51bWJlcjogMjMKRW50ZXIgdGhlIG51bWJlcjogNjcKRW50ZXIgdGhlIG51bWJlcjogMTIKRW50ZXIgdGhlIG51bWJlcjogODkKVGhlIHNtYWxsZXN0IG51bWJlciBpcyAxMgpUaGUgbGFyZ2VzdCBudW1iZXIgaXMgODk=",
+        "mockInputs": [
+          "45",
+          "23",
+          "67",
+          "12",
+          "89"
+        ]
+      },
+      {
+        "id": "D6",
+        "t": "Write a python program to add and display elements from a stack using list",
+        "starter": "stack = []\nprint(\"initially stack is empty :\",stack)\nstack.append('x')\nstack.append('y')\nstack.append('z')\nprint(\"After PUSHING stack is :\")\nprint(stack)\nprint(\"After POPed from stack: \")\nprint(stack.pop())\nprint(stack.pop())\nprint(\"any stack after elements are poped:\")\nprint(stack)",
+        "correct": "stack = []\nprint(\"initially stack is empty :\",stack)\nstack.append('x')\nstack.append('y')\nstack.append('z')\nprint(\"After PUSHING stack is :\")\nprint(stack)\nprint(\"After POPed from stack: \")\nprint(stack.pop())\nprint(stack.pop())\nprint(\"any stack after elements are poped:\")\nprint(stack)",
+        "expected": "aW5pdGlhbGx5IHN0YWNrIGlzIGVtcHR5IDogW10KQWZ0ZXIgUFVTSElORyBzdGFjayBpcyA6ClsneCcsICd5JywgJ3onXQpBZnRlciBQT1BlZCBmcm9tIHN0YWNrOiAKegp5CmFueSBzdGFjayBhZnRlciBlbGVtZW50cyBhcmUgcG9wZWQ6ClsneCddCg==",
+        "mockInputs": []
+      }
     ]
   }
 };
